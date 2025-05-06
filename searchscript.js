@@ -4,7 +4,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const resultsContainer = document.querySelector(".searchresults");
   const searchableItems = document.querySelectorAll(".search-item");
 
-  
+  const config = window.__SEARCH_CONFIG__;
+  const siteId = config?.siteId;
+  const apiBaseUrl = config?.apiBaseUrl;
+  const token = config?.token;
 
   if (!form || !input || !resultsContainer) {
     console.warn("Search form or elements not found.");
@@ -12,25 +15,25 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   if (form) {
-    form.removeAttribute("action"); // Remove the action attribute to prevent Webflow's default behavior
-    form.setAttribute("action", "#"); // Optionally set the action to "#" to ensure it doesn't navigate
+    form.removeAttribute("action");
+    form.setAttribute("action", "#");
   }
 
   form.addEventListener("submit", async function (e) {
-    e.preventDefault(); // Prevent the form's default submission behavior
+    e.preventDefault();
 
     const query = input.value.trim().toLowerCase();
     if (!query) return;
 
     resultsContainer.innerHTML = "<p>Searching...</p>";
 
-    // Get Site ID here
-  const siteId = "67d9dba3bd144b30313d89e2";
-   console.log("Using siteId:", siteId);
-
-    // Try remote API search first
     try {
-      const res = await fetch(`/api/search-index?query=${encodeURIComponent(query)}&siteId=${siteId}`);
+      const res = await fetch(`${apiBaseUrl}/api/search-index?query=${encodeURIComponent(query)}&siteId=${siteId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       if (!res.ok) throw new Error("Search failed");
 
       const data = await res.json();
@@ -66,6 +69,6 @@ document.addEventListener("DOMContentLoaded", function () {
         : "<p>No local matches found.</p>";
     }
 
-    return false; // Prevent the form submission and page redirection
+    return false;
   });
 });
