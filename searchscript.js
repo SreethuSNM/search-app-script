@@ -9,6 +9,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const apiBaseUrl = config?.apiBaseUrl;
   const token = config?.token;
 
+
+  // Log individual values to ensure they are correctly populated
+  console.log('siteId:', siteId);
+  console.log('apiBaseUrl:', apiBaseUrl);
+  console.log('token:', token);
+
   if (!form || !input || !resultsContainer) {
     console.warn("Search form or elements not found.");
     return;
