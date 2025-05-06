@@ -1,3 +1,17 @@
+// Function to get the Site ID dynamically
+function getSiteId() {
+  const attrSiteId = document.documentElement.dataset.siteId;
+  if (attrSiteId) return attrSiteId;
+
+  const meta = document.querySelector('meta[name="wf-site"]');
+  if (meta) {
+    return meta.content;
+  }
+
+  console.warn("Site ID not found");
+  return null;
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.querySelector(".w-form, #search-form");
   const input = document.querySelector("input[name='query']");
