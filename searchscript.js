@@ -1,33 +1,10 @@
-// Function to get the Site ID dynamically
-function getSiteId() {
-  // Check if window.Webflow is available and has siteId
-  if (window.Webflow && window.Webflow.siteId) {
-    console.log("Found siteId from Webflow object:", window.Webflow.siteId);
-    return window.Webflow.siteId;
-  }
-
-  // Fallback: Check for data-site-id on <html> tag
-  const attrSiteId = document.documentElement.dataset.siteId;
-  console.log("attrSiteId:", attrSiteId);  // Log the data-site-id value
-  if (attrSiteId) return attrSiteId;
-
-  // Fallback: Check for the <meta> tag
-  const meta = document.querySelector('meta[name="wf-site"]');
-  console.log("meta content:", meta ? meta.content : "No meta tag found"); // Log the meta content
-  if (meta) {
-    return meta.content;
-  }
-
-  // Log if nothing is found
-  console.warn("Site ID not found");
-  return null;
-}
-
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.querySelector(".w-form, #search-form");
   const input = document.querySelector("input[name='query']");
   const resultsContainer = document.querySelector(".searchresults");
   const searchableItems = document.querySelectorAll(".search-item");
+
+  
 
   if (!form || !input || !resultsContainer) {
     console.warn("Search form or elements not found.");
@@ -48,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
     resultsContainer.innerHTML = "<p>Searching...</p>";
 
     // Get Site ID here
-    const siteId = getSiteId();
+  const siteId = "67d9dba3bd144b30313d89e2";
     if (!siteId) {
       resultsContainer.innerHTML = "<p>Site ID not found.</p>";
       return;
