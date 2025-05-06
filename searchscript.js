@@ -26,10 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Get Site ID here
   const siteId = "67d9dba3bd144b30313d89e2";
-    if (!siteId) {
-      resultsContainer.innerHTML = "<p>Site ID not found.</p>";
-      return;
-    }
+   console.log("Using siteId:", siteId);
 
     // Try remote API search first
     try {
