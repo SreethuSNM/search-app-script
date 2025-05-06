@@ -1,14 +1,3 @@
-// Function to get the Site ID dynamically
-function getSiteId() {
-  // First, check if it's available in data-site-id on <html> tag
-  const attrSiteId = document.documentElement.dataset.siteId;
-  if (attrSiteId) return attrSiteId;
-
-  // If not, check for the meta tag Webflow includes
-  const meta = document.querySelector('meta[name="wf-site"]');
-  return meta?.content || null;
-}
-
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.querySelector(".w-form, #search-form");
   const input = document.querySelector("input[name='query']");
@@ -20,10 +9,14 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  form.removeAttribute("action");
+  if (form) {
+    form.removeAttribute("action"); // Remove the action attribute to prevent Webflow's default behavior
+    form.setAttribute("action", "#"); // Optionally set the action to "#" to ensure it doesn't navigate
+  }
 
   form.addEventListener("submit", async function (e) {
-    e.preventDefault();
+    e.preventDefault(); // Prevent the form's default submission behavior
+
     const query = input.value.trim().toLowerCase();
     if (!query) return;
 
@@ -73,6 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
         ? "<p>Found " + matchCount + " result(s) on this page.</p>"
         : "<p>No local matches found.</p>";
     }
+
+    return false; // Prevent the form submission and page redirection
   });
 });
-
