@@ -82,12 +82,15 @@ document.addEventListener("DOMContentLoaded", async function () {
     form.removeAttribute("action");
     form.setAttribute("action", "#");
 
+    
+    const rawHostname = window.location.hostname;
+    console.log("rawHostname");
+    const siteName = cleanHostname(rawHostname);
+    console.log("checking");
+    console.log("Current Hostname: ", siteName);
+
     // Get the visitor session token and hostname
     const token = await getVisitorSessionToken();
-    const rawHostname = window.location.hostname;
-    const siteName = cleanHostname(rawHostname);
-    
-    console.log("Current Hostname: ", siteName);
     console.log("Generated Token: ", token);
 
     // Add submit event listener to the search form
