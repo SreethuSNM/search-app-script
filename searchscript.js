@@ -38,7 +38,7 @@ async function getVisitorSessionToken() {
         const siteName = cleanHostname(window.location.hostname);
 
         // Make the API request to get a new session token
-        const response = await fetch('https://cb-server.web-8fb.workers.dev/api/visitor-token', {
+        const response = await fetch('https://search-server.long-rain-28bb.workers.dev/api/visitor-token', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -65,6 +65,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     const input = document.querySelector("input[name='query']");
     const resultsContainer = document.querySelector(".searchresults");
     const searchableItems = document.querySelectorAll(".search-item");
+
+    const base_url = "https://search-server.long-rain-28bb.workers.dev";
 
     if (!form || !input || !resultsContainer) {
         console.warn("Search form or elements not found.");
