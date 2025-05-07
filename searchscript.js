@@ -10,9 +10,10 @@ async function getOrCreateVisitorId() {
 
 // Function to clean hostname (removes 'www.' prefix if present)
 function cleanHostname(hostname) {
-    // Extract the part before `.webflow.io` and return it
-    return hostname.replace('.webflow.io', '');
+  const withoutWWW = hostname.replace(/^www\./, '');
+  return withoutWWW.split('.')[0];
 }
+
 
 
 // Function to check if the token has expired
