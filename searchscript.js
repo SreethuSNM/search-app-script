@@ -1,3 +1,4 @@
+console.log("Hello");
 // Function to generate or get visitor ID
 async function getOrCreateVisitorId() {
     let visitorId = localStorage.getItem('visitorId');
