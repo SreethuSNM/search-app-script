@@ -34,9 +34,7 @@ async function getVisitorSessionToken() {
         const visitorId = await getOrCreateVisitorId();
         const siteName =  window.location.hostname;
 
-
-
-        // Make the API request to get a new session token
+       // Make the API request to get a new session token
         const response = await fetch('https://search-server.long-rain-28bb.workers.dev/api/visitor-token', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -79,14 +77,13 @@ document.addEventListener("DOMContentLoaded", async function () {
     
    
     // Extract the subdomain from a Webflow-hosted site (e.g., 'search-site-14f0a1' from 'search-site-14f0a1.webflow.io')
-function cleanHostname(hostname) {
-  const withoutWWW = hostname.replace(/^www\./, '');
-  return withoutWWW.split('.')[0];
-}
+        function cleanHostname(hostname) {
+          const withoutWWW = hostname.replace(/^www\./, '');
+          return withoutWWW.split('.')[0];
+         }
      const rawHostname = window.location.hostname;
-    console.log("raw",rawHostname);
+    console.log("raw hostname",rawHostname);
     const siteName = cleanHostname(rawHostname);
-    console.log("checking");
     console.log("Current Hostname: ", siteName);
 
     // Get the visitor session token and hostname
