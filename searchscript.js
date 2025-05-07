@@ -8,12 +8,11 @@ async function getOrCreateVisitorId() {
     return visitorId;
 }
 
-// Function to clean hostname (removes 'www.' prefix if present)
+// Extract the subdomain from a Webflow-hosted site (e.g., 'search-site-14f0a1' from 'search-site-14f0a1.webflow.io')
 function cleanHostname(hostname) {
   const withoutWWW = hostname.replace(/^www\./, '');
   return withoutWWW.split('.')[0];
 }
-
 
 
 // Function to check if the token has expired
@@ -38,7 +37,12 @@ async function getVisitorSessionToken() {
 
         // Generate a new visitor ID and get cleaned hostname
         const visitorId = await getOrCreateVisitorId();
-        const siteName = cleanHostname(window.location.hostname);
+        const rawHostname = window.location.hostname;
+        const siteName = cleanHostname(rawHostname);
+
+  console.log("Raw Hostname:", rawHostname);
+  console.log("Cleaned Site Name:", siteName);
+  console.log("Token:", token);
 
         // Make the API request to get a new session token
         const response = await fetch('https://search-server.long-rain-28bb.workers.dev/api/visitor-token', {
