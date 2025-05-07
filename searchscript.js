@@ -9,12 +9,6 @@ async function getOrCreateVisitorId() {
     return visitorId;
 }
 
-// Extract the subdomain from a Webflow-hosted site (e.g., 'search-site-14f0a1' from 'search-site-14f0a1.webflow.io')
-function cleanHostname(hostname) {
-  const withoutWWW = hostname.replace(/^www\./, '');
-  return withoutWWW.split('.')[0];
-}
-
 
 // Function to check if the token has expired
 function isTokenExpired(token) {
@@ -83,8 +77,14 @@ document.addEventListener("DOMContentLoaded", async function () {
     form.setAttribute("action", "#");
 
     
-    const rawHostname = window.location.hostname;
-    console.log("rawHostname");
+   
+    // Extract the subdomain from a Webflow-hosted site (e.g., 'search-site-14f0a1' from 'search-site-14f0a1.webflow.io')
+function cleanHostname(hostname) {
+  const withoutWWW = hostname.replace(/^www\./, '');
+  return withoutWWW.split('.')[0];
+}
+     const rawHostname = window.location.hostname;
+    console.log("raw",rawHostname);
     const siteName = cleanHostname(rawHostname);
     console.log("checking");
     console.log("Current Hostname: ", siteName);
