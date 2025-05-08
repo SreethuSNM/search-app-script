@@ -75,20 +75,11 @@ document.addEventListener("DOMContentLoaded", async function () {
     form.setAttribute("action", "#");
 
     
-   
-    // Extract the subdomain from a Webflow-hosted site (e.g., 'search-site-14f0a1' from 'search-site-14f0a1.webflow.io')
-        function cleanHostname(hostname) {
-          const withoutWWW = hostname.replace(/^www\./, '');
-          return withoutWWW.split('.')[0];
-         }
-     const rawHostname = window.location.hostname;
-    console.log("raw hostname",rawHostname);
-    const siteName = cleanHostname(rawHostname);
-    console.log("Current Hostname: ", siteName);
-
     // Get the visitor session token and hostname
     const token = await getVisitorSessionToken();
     console.log("Generated Token: ", token);
+    const siteName =  window.location.hostname;
+      console.log("Current Hostname: ", siteName);
 
     // Add submit event listener to the search form
     form.addEventListener("submit", async function (e) {
