@@ -1,5 +1,11 @@
 console.log("Hello");
 
+const collections = JSON.parse(document.body.getAttribute('data-selected-collections') || '[]');
+const fields = JSON.parse(document.body.getAttribute('data-selected-fields') || '[]');
+
+console.log(collections);
+console.log(fields);
+
 // Function to clean hostname
 async function cleanHostname(hostname) {
     let cleaned = hostname.replace(/^www\./, ''); // Remove 'www.' if present
