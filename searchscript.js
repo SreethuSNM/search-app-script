@@ -1,9 +1,5 @@
-console.log("Helloo");
+console.log("Helloiio");
 
-const collections = JSON.parse(document.body.getAttribute('data-selected-collections') || '[]');
-const fields = JSON.parse(document.body.getAttribute('data-selected-fields') || '[]');
-console.log(collections);
-console.log(fields);
 
 // Function to generate or get visitor ID
 async function getOrCreateVisitorId() {
@@ -68,6 +64,12 @@ async function getVisitorSessionToken() {
 
 /* Event Listener for Search Form */
 document.addEventListener("DOMContentLoaded", async function () {
+  const collections = JSON.parse(document.body.getAttribute('data-selected-collections') || '[]');
+  const fields = JSON.parse(document.body.getAttribute('data-selected-fields') || '[]');
+  console.log(collections);
+  console.log(fields);
+
+    
     const form = document.querySelector(".w-form, #search-form");
     const input = document.querySelector("input[name='query']");
     const resultsContainer = document.querySelector(".searchresults");
