@@ -6,13 +6,7 @@ const fields = JSON.parse(document.body.getAttribute('data-selected-fields') || 
 console.log(collections);
 console.log(fields);
 
-// Function to clean hostname
-async function cleanHostname(hostname) {
-    let cleaned = hostname.replace(/^www\./, ''); // Remove 'www.' if present
-    cleaned = cleaned.split('.')[0]; // Get only the first part of the domain (e.g., 'example' from 'example.com')
-    return cleaned;
-}
-
+console.log("Hello");
 // Function to generate or get visitor ID
 async function getOrCreateVisitorId() {
     let visitorId = localStorage.getItem('visitorId');
@@ -23,18 +17,14 @@ async function getOrCreateVisitorId() {
     return visitorId;
 }
 
+
 // Function to check if the token has expired
 function isTokenExpired(token) {
     try {
-        const [payloadBase64] = token.split('.'); // Decode the payload part of the JWT
-        const payload = JSON.parse(atob(payloadBase64)); // Decode and parse the payload
-        
-        if (!payload.exp) return true; // If there is no 'exp' field, assume expired
-
-        return payload.exp < Math.floor(Date.now() / 1000); // Compare expiration with current time
-    } catch (error) {
-        console.error('Error checking token expiration:', error);
-        return true; // If token decoding fails, assume expired
+        const payload = JSON.parse(atob(token.split('.')[1])); // Decode the payload
+        return payload.exp && payload.exp < Math.floor(Date.now() / 1000); // Check expiry
+    } catch (e) {
+        return true; // If token decoding fails, assume it is expired
     }
 }
 
@@ -48,39 +38,29 @@ async function getVisitorSessionToken() {
             return existingToken; // Return if a valid token is found
         }
 
-        // Get or create visitor ID
+        // Generate a new visitor ID and get cleaned hostname
         const visitorId = await getOrCreateVisitorId();
-        
-        // Get cleaned site name
-        const siteName = await cleanHostname(window.location.hostname);
-        
-        console.log("Requesting new visitor session token...");
+        const siteName =  window.location.hostname;
+
+       // Make the API request to get a new session token
         const response = await fetch('https://search-server.long-rain-28bb.workers.dev/api/visitor-token', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                visitorId: visitorId,
+                visitorId,
                 userAgent: navigator.userAgent,
-                siteName: siteName
-            })
+                siteName,
+            }),
         });
 
-        if (!response.ok) {
-            throw new Error(`Failed to get visitor session token: ${response.status}`);
-        }
+        if (!response.ok) throw new Error('Failed to fetch visitor session token');
 
         const data = await response.json();
-        
-        // Store the new token
-        localStorage.setItem('visitorSessionToken', data.token);
-        console.log("Successfully obtained new visitor session token");
-        
-        return data.token;
+        localStorage.setItem('visitorSessionToken', data.token); // Save the new token
+        return data.token; // Return the token
     } catch (error) {
         console.error('Error getting visitor session token:', error);
-        return null; // Return null in case of failure
+        return null; // In case of error, return null
     }
 }
 
@@ -102,11 +82,21 @@ document.addEventListener("DOMContentLoaded", async function () {
     form.removeAttribute("action");
     form.setAttribute("action", "#");
 
+    
+   
+    // Extract the subdomain from a Webflow-hosted site (e.g., 'search-site-14f0a1' from 'search-site-14f0a1.webflow.io')
+        function cleanHostname(hostname) {
+          const withoutWWW = hostname.replace(/^www\./, '');
+          return withoutWWW.split('.')[0];
+         }
+     const rawHostname = window.location.hostname;
+    console.log("raw hostname",rawHostname);
+    const siteName = cleanHostname(rawHostname);
+    console.log("Current Hostname: ", siteName);
+
     // Get the visitor session token and hostname
     const token = await getVisitorSessionToken();
     console.log("Generated Token: ", token);
-    const siteName =  window.location.hostname;
-    console.log("Current Hostname: ", siteName);
 
     // Add submit event listener to the search form
     form.addEventListener("submit", async function (e) {
