@@ -82,13 +82,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     
    
     // Extract the subdomain from a Webflow-hosted site (e.g., 'search-site-14f0a1' from 'search-site-14f0a1.webflow.io')
-        function cleanHostname(hostname) {
-          const withoutWWW = hostname.replace(/^www\./, '');
-          return withoutWWW.split('.')[0];
-         }
-     const rawHostname = window.location.hostname;
-    
-    const siteName = cleanHostname(rawHostname);
+    const siteName = window.location.hostname.replace(/^www\./, '').split('.')[0];
     console.log("Current Hostname: ", siteName);
 
     // Get the visitor session token and hostname
