@@ -1,12 +1,5 @@
-console.log("Hello");
+console.log("Helloo");
 
-const collections = JSON.parse(document.body.getAttribute('data-selected-collections') || '[]');
-const fields = JSON.parse(document.body.getAttribute('data-selected-fields') || '[]');
-
-console.log(collections);
-console.log(fields);
-
-console.log("Hello");
 // Function to generate or get visitor ID
 async function getOrCreateVisitorId() {
     let visitorId = localStorage.getItem('visitorId');
