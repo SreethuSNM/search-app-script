@@ -33,10 +33,17 @@ async function getVisitorSessionToken() {
 
         // Generate a new visitor ID and get cleaned hostname
         const visitorId = await getOrCreateVisitorId();
-         const rawHostname = window.location.hostname;
-    console.log("raw hostname",rawHostname);
-    const siteName = cleanHostname(rawHostname);
-    console.log("Current Hostname: ", siteName);
+       
+       
+        
+           function cleanHostname(hostname) {
+          const withoutWWW = hostname.replace(/^www\./, '');
+          return withoutWWW.split('.')[0];
+         }
+        const rawHostname = window.location.hostname;
+        
+     const siteName = cleanHostname(rawHostname);
+    console.log("Current Hostname for get visitorid: ", siteName);
 
        // Make the API request to get a new session token
         const response = await fetch('https://search-server.long-rain-28bb.workers.dev/api/visitor-token', {
@@ -86,7 +93,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           return withoutWWW.split('.')[0];
          }
      const rawHostname = window.location.hostname;
-    console.log("raw hostname",rawHostname);
+    
     const siteName = cleanHostname(rawHostname);
     console.log("Current Hostname: ", siteName);
 
