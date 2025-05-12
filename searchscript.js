@@ -1,7 +1,5 @@
 console.log("Helloo");
 
-
-
 // Function to generate or get visitor ID
 async function getOrCreateVisitorId() {
     let visitorId = localStorage.getItem('visitorId');
@@ -138,8 +136,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                     "</div>"
                 ).join("");
         }
-if (cmsResults.length > 0) {
-     html += "<h3>CMS Results</h3>";
+ if (cmsResults.length > 0) {
+        html += "<h3>CMS Results</h3>";
        html += cmsResults
     .map(item => {
         const title = item.name || item.title || "Untitled";
@@ -170,7 +168,7 @@ if (cmsResults.length > 0) {
         return `<p><strong>${key}:</strong> ${value}</p>`;
     }).join("");
 
-    }
+
         return `
         <div style="
             flex: 1 1 calc(33% - 1rem);
@@ -186,6 +184,8 @@ if (cmsResults.length > 0) {
         </div>
         `;
     }).join("");
+
+ }
 
         resultsContainer.innerHTML = html;
 
