@@ -1,9 +1,6 @@
 console.log("Helloo");
 
-const collections = JSON.parse(document.body.getAttribute('data-selected-collections') || '[]');
-const fields = JSON.parse(document.body.getAttribute('data-selected-fields') || '[]');
-console.log(collections);
-console.log(fields);
+
 
 // Function to generate or get visitor ID
 async function getOrCreateVisitorId() {
@@ -141,7 +138,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                     "</div>"
                 ).join("");
         }
-
+if (cmsResults.length > 0) {
+     html += "<h3>CMS Results</h3>";
        html += cmsResults
     .map(item => {
         const title = item.name || item.title || "Untitled";
@@ -172,7 +170,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         return `<p><strong>${key}:</strong> ${value}</p>`;
     }).join("");
 
-
+    }
         return `
         <div style="
             flex: 1 1 calc(33% - 1rem);
