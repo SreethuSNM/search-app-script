@@ -33,7 +33,10 @@ async function getVisitorSessionToken() {
 
         // Generate a new visitor ID and get cleaned hostname
         const visitorId = await getOrCreateVisitorId();
-        const siteName =  window.location.hostname;
+         const rawHostname = window.location.hostname;
+    console.log("raw hostname",rawHostname);
+    const siteName = cleanHostname(rawHostname);
+    console.log("Current Hostname: ", siteName);
 
        // Make the API request to get a new session token
         const response = await fetch('https://search-server.long-rain-28bb.workers.dev/api/visitor-token', {
