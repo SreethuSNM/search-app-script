@@ -137,27 +137,17 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ).join("");
         }
 
-        
-if (cmsResults.length > 0) {
-            html += "<h3>CMS Results</h3>";
-            html += "<div style='display: flex; flex-wrap: wrap; gap: 1rem;'>";
-      html += cmsResults
+       html += cmsResults
     .map(item => {
         const title = item.name || item.title || "Untitled";
 
         const fieldsHtml = Object.entries(item)
             .map(([key, value]) => {
-                if (typeof value === "string" && value.match(/^https?:\/\/.*\.(jpg|jpeg|png|gif|webp)$/i)) {
-                    return `<p><strong>${key}:</strong><br><img src="${value}" alt="${key}" style="max-width: 100%; height: auto; border-radius: 4px;" /></p>`;
-                }
-
-                if (typeof value === "string" && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
-                    return `<p><strong>${key}:</strong> ${new Date(value).toLocaleString()}</p>`;
-                }
-
-                return `<p><strong>${key}:</strong> ${value}</p>`;
-            })
-            .join("");
+                const formattedValue = typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}T/)
+                    ? new Date(value).toLocaleString()  // Format ISO date
+                    : value;
+                return `<p><strong>${key}:</strong> ${formattedValue}</p>`;
+            }).join("");
 
         return `
         <div style="
@@ -173,9 +163,7 @@ if (cmsResults.length > 0) {
             ${fieldsHtml}
         </div>
         `;
-    })
-    .join("");
-
+    }).join("");
 
         resultsContainer.innerHTML = html;
 
