@@ -142,17 +142,33 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ).join("");
         }
 
+
+         // Render CMS Search Results
+        if (cmsResults.length > 0) {
+            html += "<h3>CMS Results</h3>";
+            html += "<div style='display: flex; flex-wrap: wrap; gap: 1rem;'>";
+
        html += cmsResults
     .map(item => {
         const title = item.name || item.title || "Untitled";
 
-        const fieldsHtml = Object.entries(item)
-            .map(([key, value]) => {
-                const formattedValue = typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}T/)
-                    ? new Date(value).toLocaleString()  // Format ISO date
-                    : value;
-                return `<p><strong>${key}:</strong> ${formattedValue}</p>`;
-            }).join("");
+       const fieldsHtml = Object.entries(item)
+    .map(([key, value]) => {
+        // Handle image URLs
+        if (typeof value === "string" && value.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+            return `<p><strong>${key}:</strong><br><img src="${value}" alt="${key}" style="max-width: 100%; height: auto; border-radius: 4px;" /></p>`;
+        }
+
+        // Format ISO date strings
+        const formattedValue =
+            typeof value === "string" && value.match(/^\d{4}-\d{2}-\d{2}T/)
+                ? new Date(value).toLocaleString()
+                : value;
+
+        return `<p><strong>${key}:</strong> ${formattedValue}</p>`;
+    })
+    .join("");
+
 
         return `
         <div style="
