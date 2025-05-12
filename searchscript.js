@@ -137,31 +137,33 @@ document.addEventListener("DOMContentLoaded", async function () {
                 ).join("");
         }
 
-        // Render CMS Search Results
-        if (cmsResults.length > 0) {
-            html += "<h3>CMS Results</h3>";
-            html += "<div style='display: flex; flex-wrap: wrap; gap: 1rem;'>";
-            html += cmsResults
-                .map(item => {
-                    const title = item.name || item.title || "Untitled";
-                    const summary = Object.values(item).find(val => typeof val === "string" && val.length > 20) || "";
-                    return `
-                    <div style="
-                        flex: 1 1 calc(33% - 1rem);
-                        border: 1px solid #ccc;
-                        border-radius: 8px;
-                        padding: 1rem;
-                        background: #f9f9f9;
-                        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-                        max-width: calc(33% - 1rem);
-                    ">
-                        <h4 style="margin-top: 0;">${title}</h4>
-                        <p>${summary.toString().slice(0, 150)}...</p>
-                    </div>
-                    `;
-                }).join("");
-            html += "</div>";
-        }
+       html += cmsResults
+    .map(item => {
+        const title = item.name || item.title || "Untitled";
+
+        const fieldsHtml = Object.entries(item)
+            .map(([key, value]) => {
+                const formattedValue = typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}T/)
+                    ? new Date(value).toLocaleString()  // Format ISO date
+                    : value;
+                return `<p><strong>${key}:</strong> ${formattedValue}</p>`;
+            }).join("");
+
+        return `
+        <div style="
+            flex: 1 1 calc(33% - 1rem);
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 1rem;
+            background: #f9f9f9;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            max-width: calc(33% - 1rem);
+        ">
+            <h4 style="margin-top: 0;">${title}</h4>
+            ${fieldsHtml}
+        </div>
+        `;
+    }).join("");
 
         resultsContainer.innerHTML = html;
 
