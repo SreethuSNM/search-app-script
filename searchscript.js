@@ -94,49 +94,89 @@ document.addEventListener("DOMContentLoaded", async function () {
         e.preventDefault();
 
         const query = input.value.trim().toLowerCase();
-        if (!query) return;
+        if (!query) return;      
 
-        resultsContainer.innerHTML = "<p>Searching...</p>"; // Show loading message
+    resultsContainer.innerHTML = "<p>Searching...</p>"; // Show loading message
 
-        try {
-            // Fetch results from the API
-            const res = await fetch(`${base_url}/api/search-index?query=${encodeURIComponent(query)}&siteName=${siteName}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`, // Pass the token for authentication
-                },
-            });
+    try {
+        const headers = {
+            Authorization: `Bearer ${token}`,
+        };
 
-            if (!res.ok) throw new Error("Search failed");
+        // Perform both page and CMS searches in parallel
+        const [pageRes, cmsRes] = await Promise.all([
+            fetch(`${base_url}/api/search-index?query=${encodeURIComponent(query)}&siteName=${siteName}`, { headers }),
+            fetch(`${base_url}/api/search-cms?query=${encodeURIComponent(query)}&siteName=${siteName}`, { headers }),
+        ]);
 
-            const data = await res.json(); // Parse the response data
+        const [pageData, cmsData] = await Promise.all([
+            pageRes.ok ? pageRes.json() : { results: [] },
+            cmsRes.ok ? cmsRes.json() : { results: [] },
+        ]);
 
-            // If no results or not an array, display "No results found"
-            if (!Array.isArray(data.results) || data.results.length === 0) {
-                resultsContainer.innerHTML = "<p>No results found.</p>";
-                return;
-            }
+        const pageResults = Array.isArray(pageData.results) ? pageData.results : [];
+        const cmsResults = Array.isArray(cmsData.results) ? cmsData.results : [];
 
-            // Display search results
-            resultsContainer.innerHTML = data.results
+        if (pageResults.length === 0 && cmsResults.length === 0) {
+            resultsContainer.innerHTML = "<p>No results found.</p>";
+            return;
+        }
+
+        let html = "";
+
+        // Render Page Search Results
+        if (pageResults.length > 0) {
+            html += "<h3>Page Results</h3>";
+            html += pageResults
                 .map(item =>
                     "<div class='search-result'>" +
                     "<h4><a href='" + item.publishedPath + "' target='_blank'>" +
                     (item.title || item.name || "Untitled") + "</a></h4>" +
                     "<p>" + item.matchedText.slice(0, 200) + "...</p>" +
                     "</div>"
-                )
-                .join(""); // Render the results dynamically
+                ).join("");
+        }
 
-        } catch (error) {
-            console.warn("API search failed, falling back to page search.");
+        // Render CMS Search Results
+        if (cmsResults.length > 0) {
+            html += "<h3>CMS Results</h3>";
+            html += "<div style='display: flex; flex-wrap: wrap; gap: 1rem;'>";
+            html += cmsResults
+                .map(item => {
+                    const title = item.name || item.title || "Untitled";
+                    const summary = Object.values(item).find(val => typeof val === "string" && val.length > 20) || "";
+                    return `
+                    <div style="
+                        flex: 1 1 calc(33% - 1rem);
+                        border: 1px solid #ccc;
+                        border-radius: 8px;
+                        padding: 1rem;
+                        background: #f9f9f9;
+                        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+                        max-width: calc(33% - 1rem);
+                    ">
+                        <h4 style="margin-top: 0;">${title}</h4>
+                        <p>${summary.toString().slice(0, 150)}...</p>
+                    </div>
+                    `;
+                }).join("");
+            html += "</div>";
+        }
 
-            let matchCount = 0;
-            searchableItems.forEach(item => {
-                const text = item.textContent?.toLowerCase() || "";
-                const isMatch = text.includes(query);
-                item.style.display = isMatch ? "" : "none"; // Hide non-matching items
-                if (isMatch) matchCount++;
-            });
+        resultsContainer.innerHTML = html;
+
+    } catch (error) {
+        console.warn("API search failed, falling back to page search.");
+
+        let matchCount = 0;
+        searchableItems.forEach(item => {
+            const text = item.textContent?.toLowerCase() || "";
+            const isMatch = text.includes(query);
+            item.style.display = isMatch ? "" : "none";
+            if (isMatch) matchCount++;
+        });
+
+       
 
             // Display local search results count
             resultsContainer.innerHTML = matchCount
