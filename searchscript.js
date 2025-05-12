@@ -142,15 +142,19 @@ document.addEventListener("DOMContentLoaded", async function () {
         const title = item.name || item.title || "Untitled";
 
         const fieldsHtml = Object.entries(item)
-            .map(([key, value]) => {
-                const formattedValue = typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}T/)
-                    ? new Date(value).toLocaleString()  // Format ISO date
-            
-               // Handle image objects with url/src/href
+    .map(([key, value]) => {
+        // Format date strings
+        if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
+            value = new Date(value).toLocaleString();
+        }
+
+        // Handle image objects
         if (typeof value === 'object' && value !== null) {
             const imageUrl =
-                (Array.isArray(value) && value[0]?.url) ||
-                value.url || value.src || value.href;
+                (Array.isArray(value) && typeof value[0]?.url === 'string' && value[0].url) ||
+                (typeof value.url === 'string' && value.url) ||
+                (typeof value.src === 'string' && value.src) ||
+                (typeof value.href === 'string' && value.href);
 
             if (imageUrl) {
                 return `<p><strong>${key}:</strong><br><img src="${imageUrl}" alt="${key}" class="item-image" style="max-width: 100%; border-radius: 4px;" /></p>`;
@@ -159,8 +163,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             return `<p><strong>${key}:</strong> ${JSON.stringify(value)}</p>`;
         }
 
+        // Default rendering
         return `<p><strong>${key}:</strong> ${value}</p>`;
     }).join("");
+
 
         return `
         <div style="
