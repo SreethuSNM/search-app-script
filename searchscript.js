@@ -36,13 +36,7 @@ async function getVisitorSessionToken() {
        
        
         
-           function cleanHostname(hostname) {
-          const withoutWWW = hostname.replace(/^www\./, '');
-          return withoutWWW.split('.')[0];
-         }
-        const rawHostname = window.location.hostname;
-        
-     const siteName = cleanHostname(rawHostname);
+    const siteName = window.location.hostname.replace(/^www\./, '').split('.')[0];
     console.log("Current Hostname for get visitorid: ", siteName);
 
        // Make the API request to get a new session token
