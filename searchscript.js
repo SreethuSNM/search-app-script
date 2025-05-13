@@ -72,6 +72,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     const collectionsAttr = bodyElement.getAttribute('data-selected-collections');
     const fieldsAttr = bodyElement.getAttribute('data-selected-fields');
 
+      console.log("Collections attribute:", collectionsAttr);
+console.log("Fields attribute:", fieldsAttr);
+
     // Parse the JSON strings into JavaScript arrays
     const selectedCollections = collectionsAttr ? JSON.parse(collectionsAttr) : [];
     const selectedFields = fieldsAttr ? JSON.parse(fieldsAttr) : [];
