@@ -79,6 +79,27 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Log the results to verify
     console.log("Selected Collections:", selectedCollections);
     console.log("Selected Fields:", selectedFields);
+
+    // You can now use selectedCollections and selectedFields for further logic
+    // Example usage:
+    if (selectedCollections.length > 0) {
+      // Process the selected collections
+      selectedCollections.forEach(collectionId => {
+        console.log("Processing collection:", collectionId);
+      });
+    }
+
+    if (selectedFields.length > 0) {
+      // Process the selected fields
+      selectedFields.forEach(field => {
+        console.log("Processing field:", field);
+      });
+    }
+  } else {
+    console.log("Body element not found!");
+  }
+
+
     
     const form = document.querySelector(".w-form, #search-form");
     const input = document.querySelector("input[name='query']");
