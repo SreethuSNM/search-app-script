@@ -64,11 +64,21 @@ async function getVisitorSessionToken() {
 
 /* Event Listener for Search Form */
 document.addEventListener("DOMContentLoaded", async function () {
-  const collections = JSON.parse(document.body.getAttribute('data-selected-collections') || '[]');
-  const fields = JSON.parse(document.body.getAttribute('data-selected-fields') || '[]');
-  console.log(collections);
-  console.log(fields);
+  // Select the body element to access the injected data attributes
+  const bodyElement = document.querySelector('body');
 
+  if (bodyElement) {
+    // Retrieve the injected collections and fields as JSON strings
+    const collectionsAttr = bodyElement.getAttribute('data-selected-collections');
+    const fieldsAttr = bodyElement.getAttribute('data-selected-fields');
+
+    // Parse the JSON strings into JavaScript arrays
+    const selectedCollections = collectionsAttr ? JSON.parse(collectionsAttr) : [];
+    const selectedFields = fieldsAttr ? JSON.parse(fieldsAttr) : [];
+
+    // Log the results to verify
+    console.log("Selected Collections:", selectedCollections);
+    console.log("Selected Fields:", selectedFields);
     
     const form = document.querySelector(".w-form, #search-form");
     const input = document.querySelector("input[name='query']");
