@@ -127,29 +127,35 @@ if (searchConfigDiv) {
             Authorization: `Bearer ${token}`,
         };
 
-        // Perform both page and CMS searches in parallel
-        const [pageRes, cmsRes] = await Promise.all([
-            fetch(`${base_url}/api/search-index?query=${encodeURIComponent(query)}&siteName=${siteName}`, { headers }),
-            fetch(`${base_url}/api/search-cms?query=${encodeURIComponent(query)}&siteName=${siteName}`, { headers }),
-        ]);
+        // Initialize the API requests
+            let pageRes, cmsRes;
+        // Based on selectedOption, decide whether to perform page search, CMS search, or both
+            if (selectedOption === "Pages" || selectedOption === "Both") {
+                pageRes = await fetch(`${base_url}/api/search-index?query=${encodeURIComponent(query)}&siteName=${siteName}`, { headers });
+            }
+            if (selectedOption === "Collection" || selectedOption === "Both") {
+                cmsRes = await fetch(`${base_url}/api/search-cms?query=${encodeURIComponent(query)}&siteName=${siteName}`, { headers });
+            }
 
-        const [pageData, cmsData] = await Promise.all([
-            pageRes.ok ? pageRes.json() : { results: [] },
-            cmsRes.ok ? cmsRes.json() : { results: [] },
-        ]);
+         // Wait for both responses, but only process the relevant ones
+            const [pageData, cmsData] = await Promise.all([
+                pageRes?.ok ? pageRes.json() : { results: [] },
+                cmsRes?.ok ? cmsRes.json() : { results: [] },
+            ]);
 
-        const pageResults = Array.isArray(pageData.results) ? pageData.results : [];
-        const cmsResults = Array.isArray(cmsData.results) ? cmsData.results : [];
 
-        if (pageResults.length === 0 && cmsResults.length === 0) {
-            resultsContainer.innerHTML = "<p>No results found.</p>";
-            return;
-        }
+         const pageResults = Array.isArray(pageData.results) ? pageData.results : [];
+            const cmsResults = Array.isArray(cmsData.results) ? cmsData.results : [];
+
+          if (pageResults.length === 0 && cmsResults.length === 0) {
+                resultsContainer.innerHTML = "<p>No results found.</p>";
+                return;
+            }
 
         let html = "";
 
         // Render Page Search Results
-        if (pageResults.length > 0) {
+       if ((selectedOption === "Pages" || selectedOption === "Both") && pageResults.length > 0) {
             html += "<h3>Page Results</h3>";
             html += pageResults
                 .map(item =>
@@ -160,7 +166,8 @@ if (searchConfigDiv) {
                     "</div>"
                 ).join("");
         }
- if (cmsResults.length > 0) {
+// Render CMS Search Results if required
+      if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults.length > 0) {
         html += "<h3>CMS Results</h3>";
        html += cmsResults
     .map(item => {
