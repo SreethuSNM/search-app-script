@@ -77,17 +77,17 @@ if (searchConfigDiv) {
   const collections = selectedCollections ? JSON.parse(selectedCollections) : [];
   const fields = selectedFields ? JSON.parse(selectedFields) : [];
 
-const collectionsParam = encodeURIComponent(JSON.stringify(collections));
-const fieldsParam = encodeURIComponent(JSON.stringify(fields));
-
- // Log the values to see them
+    // Log the values to see them
   console.log("Selected Collections:", collections);
   console.log("Selected Fields:", fields);
   console.log("Selected Option:", selectedOption);
 
-    
-    
-    
+const collectionsParam = encodeURIComponent(JSON.stringify(collections));
+const fieldsParam = encodeURIComponent(JSON.stringify(fields));
+
+ console.log("collectionsParam",collectionsParam);
+     console.log("fieldsParam",fieldsParam);
+ 
     const form = document.querySelector(".w-form, #search-form");
     const input = document.querySelector("input[name='query']");
     const resultsContainer = document.querySelector(".searchresults");
