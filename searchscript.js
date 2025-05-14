@@ -77,10 +77,15 @@ if (searchConfigDiv) {
   const collections = selectedCollections ? JSON.parse(selectedCollections) : [];
   const fields = selectedFields ? JSON.parse(selectedFields) : [];
 
-     // Log the values to see them
+const collectionsParam = encodeURIComponent(JSON.stringify(collections));
+const fieldsParam = encodeURIComponent(JSON.stringify(fields));
+
+ // Log the values to see them
   console.log("Selected Collections:", collections);
   console.log("Selected Fields:", fields);
   console.log("Selected Option:", selectedOption);
+
+    
     
     
     const form = document.querySelector(".w-form, #search-form");
@@ -126,7 +131,7 @@ if (searchConfigDiv) {
        // Perform both page and CMS searches in parallel
         const [pageRes, cmsRes] = await Promise.all([
             fetch(`${base_url}/api/search-index?query=${encodeURIComponent(query)}&siteName=${siteName}`, { headers }),
-            fetch(`${base_url}/api/search-cms?query=${encodeURIComponent(query)}&siteName=${siteName}`, { headers }),
+            fetch(`${base_url}/api/search-cms?query=${encodeURIComponent(query)}&siteName=${siteName}&collections=${collectionsParam}&fields=${fieldsParam}`, { headers }),
         ]);
 
         const [pageData, cmsData] = await Promise.all([
