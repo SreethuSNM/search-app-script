@@ -133,9 +133,28 @@ if (searchConfigDiv) {
             if (selectedOption === "Pages" || selectedOption === "Both") {
                 pageRes = await fetch(`${base_url}/api/search-index?query=${encodeURIComponent(query)}&siteName=${siteName}`, { headers });
             }
-            if (selectedOption === "Collection" || selectedOption === "Both") {
-                cmsRes = await fetch(`${base_url}/api/search-cms?query=${encodeURIComponent(query)}&siteName=${siteName}`, { headers });
-            }
+           if (selectedOption === "Collection" || selectedOption === "Both") {
+  try {
+    cmsRes = await fetch(`${base_url}/api/search-cms`, {
+      method: "POST",
+      headers: {
+        ...headers,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query, siteName }),
+    });
+
+    console.log("CMS Search Status:", cmsRes.status);
+    const raw = await cmsRes.text();
+    console.log("CMS Search Raw Body:", raw);
+
+    cmsData = JSON.parse(raw);
+  } catch (err) {
+    console.error("❌ Failed CMS Search:", err);
+    cmsData = { results: [] };
+  }
+}
+
 
          // Wait for both responses, but only process the relevant ones
             const [pageData, cmsData] = await Promise.all([
