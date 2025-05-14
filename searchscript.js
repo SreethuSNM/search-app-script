@@ -1,4 +1,4 @@
-console.log("Helloiio");
+console.log("Hello");
 
 
 // Function to generate or get visitor ID
@@ -64,43 +64,26 @@ async function getVisitorSessionToken() {
 
 /* Event Listener for Search Form */
 document.addEventListener("DOMContentLoaded", async function () {
-  // Select the body element to access the injected data attributes
-  const bodyElement = document.querySelector('body');
+ // Find the div with id="search-config"
+const searchConfigDiv = document.querySelector('#search-config');
 
-  if (bodyElement) {
-    // Retrieve the injected collections and fields as JSON strings
-    const collectionsAttr = bodyElement.getAttribute('data-selected-collections');
-    const fieldsAttr = bodyElement.getAttribute('data-selected-fields');
+if (searchConfigDiv) {
+  // Get the custom attributes
+  const selectedCollections = searchConfigDiv.getAttribute('data-selected-collections');
+  const selectedFields = searchConfigDiv.getAttribute('data-selected-fields');
+  const selectedOption = searchConfigDiv.getAttribute('data-selected-option');
 
-      console.log("Collections attribute:", collectionsAttr);
-console.log("Fields attribute:", fieldsAttr);
+  // Parse the JSON attributes if they exist
+  const collections = selectedCollections ? JSON.parse(selectedCollections) : [];
+  const fields = selectedFields ? JSON.parse(selectedFields) : [];
 
-    // Parse the JSON strings into JavaScript arrays
-    const selectedCollections = collectionsAttr ? JSON.parse(collectionsAttr) : [];
-    const selectedFields = fieldsAttr ? JSON.parse(fieldsAttr) : [];
-
-    // Log the results to verify
-    console.log("Selected Collections:", selectedCollections);
-    console.log("Selected Fields:", selectedFields);
-
-    // You can now use selectedCollections and selectedFields for further logic
-    // Example usage:
-    if (selectedCollections.length > 0) {
-      // Process the selected collections
-      selectedCollections.forEach(collectionId => {
-        console.log("Processing collection:", collectionId);
-      });
-    }
-
-    if (selectedFields.length > 0) {
-      // Process the selected fields
-      selectedFields.forEach(field => {
-        console.log("Processing field:", field);
-      });
-    }
-  } else {
-    console.log("Body element not found!");
-  }
+  // Log the values to see them
+  console.log("Selected Collections:", collections);
+  console.log("Selected Fields:", fields);
+  console.log("Selected Option:", selectedOption);
+} else {
+  console.error("❌ 'search-config' div not found.");
+}
 
 
     
