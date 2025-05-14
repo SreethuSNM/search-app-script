@@ -141,6 +141,10 @@ if (searchConfigDiv) {
         const pageResults = Array.isArray(pageData.results) ? pageData.results : [];
         const cmsResults = Array.isArray(cmsData.results) ? cmsData.results : [];
 
+        console.log("Page Results:", pageResults);
+        console.log("CMS Results:", cmsResults);
+
+
         if (pageResults.length === 0 && cmsResults.length === 0) {
             resultsContainer.innerHTML = "<p>No results found.</p>";
             return;
