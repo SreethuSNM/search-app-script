@@ -166,6 +166,8 @@ if (searchConfigDiv) {
                 ).join("");
         }
 // Render CMS Search Results if required
+        console.log("Selected Option before cmssearch:", selectedOption);
+
       if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults.length > 0) {
         html += "<h3>CMS Results</h3>";
        html += cmsResults
