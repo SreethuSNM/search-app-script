@@ -127,51 +127,27 @@ if (searchConfigDiv) {
             Authorization: `Bearer ${token}`,
         };
 
-        // Initialize the API requests
-            let pageRes, cmsRes;
-        // Based on selectedOption, decide whether to perform page search, CMS search, or both
-            if (selectedOption === "Pages" || selectedOption === "Both") {
-                pageRes = await fetch(`${base_url}/api/search-index?query=${encodeURIComponent(query)}&siteName=${siteName}`, { headers });
-            }
-           if (selectedOption === "Collection" || selectedOption === "Both") {
-  try {
-    cmsRes = await fetch(`${base_url}/api/search-cms`, {
-      method: "POST",
-      headers: {
-        ...headers,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ query, siteName }),
-    });
+       // Perform both page and CMS searches in parallel
+        const [pageRes, cmsRes] = await Promise.all([
+            fetch(`${base_url}/api/search-index?query=${encodeURIComponent(query)}&siteName=${siteName}`, { headers }),
+            fetch(`${base_url}/api/search-cms?query=${encodeURIComponent(query)}&siteName=${siteName}`, { headers }),
+        ]);
 
-    console.log("CMS Search Status:", cmsRes.status);
-    const raw = await cmsRes.text();
-    console.log("CMS Search Raw Body:", raw);
+        const [pageData, cmsData] = await Promise.all([
+            pageRes.ok ? pageRes.json() : { results: [] },
+            cmsRes.ok ? cmsRes.json() : { results: [] },
+        ]);
 
-    cmsData = JSON.parse(raw);
-  } catch (err) {
-    console.error("❌ Failed CMS Search:", err);
-    cmsData = { results: [] };
-  }
-}
+        const pageResults = Array.isArray(pageData.results) ? pageData.results : [];
+        const cmsResults = Array.isArray(cmsData.results) ? cmsData.results : [];
 
-
-         // Wait for both responses, but only process the relevant ones
-            const [pageData, cmsData] = await Promise.all([
-                pageRes?.ok ? pageRes.json() : { results: [] },
-                cmsRes?.ok ? cmsRes.json() : { results: [] },
-            ]);
-
-
-         const pageResults = Array.isArray(pageData.results) ? pageData.results : [];
-            const cmsResults = Array.isArray(cmsData.results) ? cmsData.results : [];
-
-          if (pageResults.length === 0 && cmsResults.length === 0) {
-                resultsContainer.innerHTML = "<p>No results found.</p>";
-                return;
-            }
+        if (pageResults.length === 0 && cmsResults.length === 0) {
+            resultsContainer.innerHTML = "<p>No results found.</p>";
+            return;
+        }
 
         let html = "";
+
 
         // Render Page Search Results
        if ((selectedOption === "Pages" || selectedOption === "Both") && pageResults.length > 0) {
