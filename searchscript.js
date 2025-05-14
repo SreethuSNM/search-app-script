@@ -77,9 +77,9 @@ if (searchConfigDiv) {
   const collections = selectedCollections ? JSON.parse(selectedCollections) : [];
   const fields = selectedFields ? JSON.parse(selectedFields) : [];
 
-    const selectedFields = searchConfigDiv.getAttribute('data-selected-fields');
-console.log("Raw Selected Fields:", selectedFields);  // Check the raw attribute value
-const decodedFields = JSON.parse(decodeURIComponent(selectedFields));
+    const selectedFieldss = searchConfigDiv.getAttribute('data-selected-fields');
+console.log("Raw Selected Fields:", selectedFieldss);  // Check the raw attribute value
+const decodedFields = JSON.parse(decodeURIComponent(selectedFieldss));
 console.log("Decoded Selected Fields:", decodedFields);
 
 
