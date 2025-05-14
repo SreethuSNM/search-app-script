@@ -77,18 +77,12 @@ if (searchConfigDiv) {
   const collections = selectedCollections ? JSON.parse(selectedCollections) : [];
   const fields = selectedFields ? JSON.parse(selectedFields) : [];
 
-    const selectedFieldss = searchConfigDiv.getAttribute('data-selected-fields');
-console.log("Raw Selected Fields:", selectedFieldss);  // Check the raw attribute value
-const decodedFields = JSON.parse(decodeURIComponent(selectedFieldss));
-console.log("Decoded Selected Fields:", decodedFields);
-
-
-  // Log the values to see them
+     // Log the values to see them
   console.log("Selected Collections:", collections);
   console.log("Selected Fields:", fields);
   console.log("Selected Option:", selectedOption);
     
-    console.log("Selected Option 1:", selectedOption);
+    
     const form = document.querySelector(".w-form, #search-form");
     const input = document.querySelector("input[name='query']");
     const resultsContainer = document.querySelector(".searchresults");
@@ -142,15 +136,7 @@ console.log("Decoded Selected Fields:", decodedFields);
 
         const pageResults = Array.isArray(pageData.results) ? pageData.results : [];
         const cmsResults = Array.isArray(cmsData.results) ? cmsData.results : [];
-
-        console.log("Page Results:", pageResults);
-        console.log("CMS Results:", cmsResults);
-
-         // Debugging the condition and results length
-            console.log("CMS Results Length:", cmsResults.length);
-            console.log("Should render CMS results? Condition:", (selectedOption === "Collection" || selectedOption === "Both"), "&& cmsResults.length > 0:", cmsResults.length > 0);
-
-
+        
         if (pageResults.length === 0 && cmsResults.length === 0) {
             resultsContainer.innerHTML = "<p>No results found.</p>";
             return;
@@ -172,7 +158,7 @@ console.log("Selected Option 2:", selectedOption);
                 ).join("");
         }
 // Render CMS Search Results if required
-        console.log("Selected Option before cmssearch:", selectedOption);
+      
 
       if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults.length > 0) {
         html += "<h3>CMS Results</h3>";
