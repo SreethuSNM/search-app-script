@@ -81,11 +81,7 @@ if (searchConfigDiv) {
   console.log("Selected Collections:", collections);
   console.log("Selected Fields:", fields);
   console.log("Selected Option:", selectedOption);
-} else {
-  console.error("❌ 'search-config' div not found.");
-}
-
-
+    
     console.log("Selected Option 1:", selectedOption);
     const form = document.querySelector(".w-form, #search-form");
     const input = document.querySelector("input[name='query']");
@@ -246,4 +242,7 @@ console.log("Selected Option 2:", selectedOption);
 
         return false;
     });
+    } else {
+  console.error("❌ 'search-config' div not found.");
+}
 });
