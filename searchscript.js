@@ -144,6 +144,10 @@ if (searchConfigDiv) {
         console.log("Page Results:", pageResults);
         console.log("CMS Results:", cmsResults);
 
+         // Debugging the condition and results length
+            console.log("CMS Results Length:", cmsResults.length);
+            console.log("Should render CMS results? Condition:", (selectedOption === "Collection" || selectedOption === "Both"), "&& cmsResults.length > 0:", cmsResults.length > 0);
+
 
         if (pageResults.length === 0 && cmsResults.length === 0) {
             resultsContainer.innerHTML = "<p>No results found.</p>";
