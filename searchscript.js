@@ -86,7 +86,7 @@ if (searchConfigDiv) {
 }
 
 
-    
+    console.log("Selected Option 1:", selectedOption);
     const form = document.querySelector(".w-form, #search-form");
     const input = document.querySelector("input[name='query']");
     const resultsContainer = document.querySelector(".searchresults");
@@ -156,7 +156,7 @@ if (searchConfigDiv) {
 
         let html = "";
 
-
+console.log("Selected Option 2:", selectedOption);
         // Render Page Search Results
        if ((selectedOption === "Pages" || selectedOption === "Both") && pageResults.length > 0) {
             html += "<h3>Page Results</h3>";
