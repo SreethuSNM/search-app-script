@@ -1,4 +1,4 @@
-<script>
+
 console.log("Hello");
 
 // Generate or get visitor ID
@@ -213,4 +213,4 @@ document.addEventListener("DOMContentLoaded", async function () {
         return false;
     });
 });
-</script>
+
