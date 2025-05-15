@@ -72,7 +72,12 @@ if (searchConfigDiv) {
   const selectedCollections = searchConfigDiv.getAttribute('data-selected-collections');
   const selectedFields = searchConfigDiv.getAttribute('data-selected-fields');
   const selectedOption = searchConfigDiv.getAttribute('data-selected-option');
-  const searchBarType = searchConfigDiv.getAttribute('data-search-bar') 
+  const searchBarType = searchConfigDiv.getAttribute('data-search-bar') ;
+    const resultPageSetting = searchConfigDiv.getAttribute('data-result-page');
+const linkTarget = resultPageSetting === "New tab" ? "_blank" : "_self";
+
+    
+
 
   // Parse the JSON attributes if they exist
   const collections = selectedCollections ? JSON.parse(selectedCollections) : [];
@@ -186,7 +191,8 @@ console.log("Selected Option 2:", selectedOption);
             html += pageResults
                 .map(item =>
                     "<div class='search-result'>" +
-                    "<h4><a href='" + item.publishedPath + "' target='_blank'>" +
+                    // "<h4><a href='" + item.publishedPath + "' target='_blank'>" +
+                     "<h4><a href="${item.publishedPath}" target="${linkTarget}">" +
                     (item.title || item.name || "Untitled") + "</a></h4>" +
                     "<p>" + item.matchedText.slice(0, 200) + "...</p>" +
                     "</div>"
@@ -238,7 +244,10 @@ console.log("Selected Option 2:", selectedOption);
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
             max-width: calc(33% - 1rem);
         ">
-            <h4 style="margin-top: 0;">${title}</h4>
+            <h4 style="margin-top: 0;">
+  <a href="${item.url || '#'}" target="${linkTarget}">${title}</a>
+</h4>
+
             ${fieldsHtml}
         </div>
         `;
@@ -247,6 +256,41 @@ console.log("Selected Option 2:", selectedOption);
  }
 
         resultsContainer.innerHTML = html;
+//         if (shouldOpenInNewPage) {
+//     const newTab = window.open();
+//     newTab.document.write(`
+//         <html><head><title>Search Results</title>
+//         <style>
+//             body {
+//                 font-family: sans-serif;
+//                 padding: 20px;
+//             }
+//             .search-result, .item-card {
+//                 padding: 16px;
+//                 border: 1px solid #ddd;
+//                 background: #fff;
+//                 margin-bottom: 16px;
+//                 border-radius: 8px;
+//                 box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+//             }
+//             h3 {
+//                 border-bottom: 1px solid #eee;
+//                 padding-bottom: 4px;
+//                 margin-top: 32px;
+//             }
+//             .item-image {
+//                 max-width: 100%;
+//                 border-radius: 4px;
+//                 margin-top: 8px;
+//             }
+//         </style>
+//         </head><body>${html}</body></html>
+//     `);
+//     newTab.document.close();
+// } else {
+//     resultsContainer.innerHTML = html;
+// }
+
 
     } catch (error) {
         console.warn("API search failed, falling back to page search.");
