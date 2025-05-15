@@ -55,13 +55,16 @@ async function getVisitorSessionToken() {
     }
 }
 
-// Function to render page or CMS results as Grid or List
-function renderResults(results, title, displayMode, maxItems, gridColumns = 3) {
+// Render search results with pagination
+function renderResults(results, title, displayMode, maxItems, gridColumns = 3, paginationType = "None", container, currentPage = 1) {
     if (!Array.isArray(results) || results.length === 0) return "";
 
-    const slicedResults = maxItems ? results.slice(0, maxItems) : results;
+    const totalPages = maxItems ? Math.ceil(results.length / maxItems) : 1;
+    const startIndex = maxItems ? (currentPage - 1) * maxItems : 0;
+    const endIndex = maxItems ? startIndex + maxItems : results.length;
+    const pagedResults = results.slice(startIndex, endIndex);
 
-    const itemsHtml = slicedResults.map(item => {
+    const itemsHtml = pagedResults.map(item => {
         const titleText = item.name || item.title || "Untitled";
         const url = item.publishedPath || item.slug || "#";
         const matchedText = item.matchedText?.slice(0, 200) || "";
@@ -101,18 +104,50 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3) {
         </div>`;
     }).join("");
 
-    return `
+    let paginationHtml = "";
+    if (paginationType === "Numbered" && totalPages > 1) {
+        paginationHtml = `<div class="pagination" style="margin-top: 1rem;">`;
+        for (let i = 1; i <= totalPages; i++) {
+            paginationHtml += `<button class="pagination-button" data-page="${i}" style="margin: 0 4px; padding: 4px 8px;">${i}</button>`;
+        }
+        paginationHtml += `</div>`;
+    }
+
+    if (paginationType === "Load More" && endIndex < results.length) {
+        paginationHtml += `<div style="text-align:center;"><button class="load-more-button" style="margin-top:1rem;">Load More</button></div>`;
+    }
+
+    const sectionHtml = `
         <section style="margin-top: 2rem;">
             <h3>${title}</h3>
-            <div class="search-results-wrapper" style="
-                display: ${displayMode === 'Grid' ? 'flex' : 'block'};
-                flex-wrap: wrap;
-                gap: 1rem;
-            ">
+            <div class="search-results-wrapper" style="display: ${displayMode === 'Grid' ? 'flex' : 'block'}; flex-wrap: wrap; gap: 1rem;">
                 ${itemsHtml}
             </div>
-        </section>
-    `;
+            ${paginationHtml}
+        </section>`;
+
+    if (container) {
+        container.innerHTML = sectionHtml;
+        if (paginationType === "Numbered") {
+            container.querySelectorAll('.pagination-button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const page = parseInt(btn.getAttribute('data-page'));
+                    renderResults(results, title, displayMode, maxItems, gridColumns, paginationType, container, page);
+                });
+            });
+        }
+
+        if (paginationType === "Load More") {
+            const loadBtn = container.querySelector('.load-more-button');
+            if (loadBtn) {
+                loadBtn.addEventListener('click', () => {
+                    renderResults(results, title, displayMode, endIndex + maxItems, gridColumns, paginationType, container, 1);
+                });
+            }
+        }
+    }
+
+    return sectionHtml;
 }
 
 document.addEventListener("DOMContentLoaded", async function () {
@@ -127,17 +162,20 @@ document.addEventListener("DOMContentLoaded", async function () {
     const selectedFields = JSON.parse(searchConfigDiv.getAttribute('data-selected-fields') || '[]');
     const selectedOption = searchConfigDiv.getAttribute('data-selected-option');
     const displayMode = searchConfigDiv.getAttribute('data-display-mode');
+    const paginationType = searchConfigDiv.getAttribute('data-pagination-type') || "None";
     const gridRows = parseInt(searchConfigDiv.getAttribute('data-grid-rows'), 10) || 1;
     const gridColumns = parseInt(searchConfigDiv.getAttribute('data-grid-columns'), 10) || 1;
+    const itemsPerPage = parseInt(searchConfigDiv.getAttribute('data-items-per-page'), 10) || 10;
+    const resultType = searchConfigDiv.getAttribute('data-result-type') || "Click on search";
 
-    const maxItems = displayMode === "Grid" ? gridRows * gridColumns : null;
+    const maxItems = displayMode === "Grid" ? gridRows * gridColumns : itemsPerPage;
+
     const collectionsParam = encodeURIComponent(JSON.stringify(selectedCollections));
     const fieldsParam = encodeURIComponent(JSON.stringify(selectedFields));
 
     const form = document.querySelector(".w-form, #search-form");
     const input = document.querySelector("input[name='query']");
     const resultsContainer = document.querySelector(".searchresults");
-    const searchableItems = document.querySelectorAll(".search-item");
     const base_url = "https://search-server.long-rain-28bb.workers.dev";
     const siteName = window.location.hostname.replace(/^www\./, '').split('.')[0];
 
@@ -152,17 +190,14 @@ document.addEventListener("DOMContentLoaded", async function () {
     const token = await getVisitorSessionToken();
     console.log("Generated Token: ", token);
 
-    form.addEventListener("submit", async function (e) {
-        e.preventDefault();
+    async function performSearch() {
         const query = input.value.trim().toLowerCase();
         if (!query) return;
 
         resultsContainer.innerHTML = "<p>Searching...</p>";
 
         try {
-            const headers = {
-                Authorization: `Bearer ${token}`,
-            };
+            const headers = { Authorization: `Bearer ${token}` };
 
             const [pageRes, cmsRes] = await Promise.all([
                 fetch(`${base_url}/api/search-index?query=${encodeURIComponent(query)}&siteName=${siteName}`, { headers }),
@@ -182,35 +217,41 @@ document.addEventListener("DOMContentLoaded", async function () {
                 return;
             }
 
-            let html = "";
+            resultsContainer.innerHTML = "";
 
             if ((selectedOption === "Pages" || selectedOption === "Both") && pageResults.length > 0) {
-                html += renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns);
+                const container = document.createElement('div');
+                resultsContainer.appendChild(container);
+                renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container);
             }
 
             if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults.length > 0) {
-                html += renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns);
+                const container = document.createElement('div');
+                resultsContainer.appendChild(container);
+                renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container);
             }
-
-            resultsContainer.innerHTML = html;
 
         } catch (error) {
             console.warn("API search failed, falling back to page search.");
-
-            let matchCount = 0;
-            searchableItems.forEach(item => {
-                const text = item.textContent?.toLowerCase() || "";
-                const isMatch = text.includes(query);
-                item.style.display = isMatch ? "" : "none";
-                if (isMatch) matchCount++;
-            });
-
-            resultsContainer.innerHTML = matchCount
-                ? "<p>Found " + matchCount + " result(s) on this page.</p>"
-                : "<p>No local matches found.</p>";
+            resultsContainer.innerHTML = "<p>No results found.</p>";
         }
+    }
 
-        return false;
-    });
+    if (resultType === "Auto result") {
+        input.addEventListener("input", debounce(performSearch, 500));
+    } else {
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            performSearch();
+        });
+    }
+
+    function debounce(fn, delay) {
+        let timer;
+        return function (...args) {
+            clearTimeout(timer);
+            timer = setTimeout(() => fn.apply(this, args), delay);
+        };
+    }
 });
 
