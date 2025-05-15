@@ -118,42 +118,30 @@ const fieldsParam = encodeURIComponent(JSON.stringify(fields));
 
      // === Implement Search Bar Display Mode ===
   if (searchBarType === "Icon") {
-    // Hide form initially, show icon button
-    form.style.display = "none";
+  // Hide form initially, show icon container (assumed to already exist)
+  form.style.display = "none";
 
-    // Create icon container if not existing
-    let iconContainer = document.querySelector(".searchiconcontainer");
-    if (!iconContainer) {
-      iconContainer = document.createElement("div");
-      iconContainer.className = "searchiconcontainer";
-      // Insert icon container before the form
-      form.parentNode.insertBefore(iconContainer, form);
-    }
-
-    // Add search icon inside iconContainer if not present
-    if (!iconContainer.querySelector("svg, img")) {
-      // Use an inline SVG or image icon
-      iconContainer.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" aria-hidden="true">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>`;
-    }
-
-    iconContainer.style.cursor = "pointer";
-
-    // On click show the form and hide the icon container
-    iconContainer.addEventListener("click", () => {
-      form.style.display = "";
-      iconContainer.style.display = "none";
-      input.focus();
-    });
-  } else {
-    // "Expand" mode: show form, hide icon container if exists
-    form.style.display = "";
-    const iconContainer = document.querySelector(".searchiconcontainer");
-    if (iconContainer) iconContainer.style.display = "none";
+  const iconContainer = document.querySelector(".searchiconcontainer");
+  if (!iconContainer) {
+    console.error("❌ '.searchiconcontainer' element not found.");
+    return;
   }
+
+  iconContainer.style.cursor = "pointer";
+  iconContainer.style.display = ""; // Make sure icon is visible
+
+  // On click show the form and hide the icon container
+  iconContainer.addEventListener("click", () => {
+    form.style.display = "";
+    iconContainer.style.display = "none";
+    input.focus();
+  });
+} else {
+  // Expand mode: show form and hide icon container if exists
+  form.style.display = "";
+  const iconContainer = document.querySelector(".searchiconcontainer");
+  if (iconContainer) iconContainer.style.display = "none";
+}
 
 
     // Add submit event listener to the search form
