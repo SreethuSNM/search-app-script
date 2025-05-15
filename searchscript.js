@@ -89,16 +89,14 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
         }).join("");
 
         return `
-        <div class="search-result-item" style="${displayMode === 'Grid' ? `
-            flex: 1 1 calc(${100 / gridColumns}% - 1rem);
-            max-width: calc(${100 / gridColumns}% - 1rem);
-            margin: 0.5rem;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 1rem;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);` : `margin-bottom: 1rem;`
-        }">
+           <div class="search-result-item" style="${displayMode === 'Grid' ? `
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);` : `margin-bottom: 1rem;`
+}">
+
             <h4><a href="${url}" target="_blank">${titleText}</a></h4>
             ${matchedText ? `<p>${matchedText}...</p>` : fieldsHtml}
         </div>`;
@@ -120,7 +118,12 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
     const sectionHtml = `
         <section style="margin-top: 2rem;">
             <h3>${title}</h3>
-            <div class="search-results-wrapper" style="display: ${displayMode === 'Grid' ? 'flex' : 'block'}; flex-wrap: wrap; gap: 1rem;">
+            <div class="search-results-wrapper" style="
+  display: ${displayMode === 'Grid' ? 'grid' : 'block'};
+  grid-template-columns: repeat(${gridColumns}, 1fr);
+  gap: 1rem;
+">
+
                 ${itemsHtml}
             </div>
             ${paginationHtml}
