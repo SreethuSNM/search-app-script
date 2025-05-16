@@ -181,7 +181,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     const resultType = searchConfigDiv.getAttribute('data-result-type') || "Click on search";
     const searchBarType = searchConfigDiv.getAttribute('data-search-bar');
     const resultPage = searchConfigDiv.getAttribute('data-result-page') || "Same page";
-    const shouldOpenInNewPage = resultPage === "New tab";
+   const shouldOpenInNewPage = resultPage === "New Page";
+
 
 
     const maxItems = displayMode === "Grid" ? gridRows * gridColumns : itemsPerPage;
@@ -342,6 +343,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     } else {
         form.addEventListener("submit", function (e) {
             e.preventDefault();
+             let newTab;
+    if (shouldOpenInNewPage) {
+        newTab = window.open(); // ✅ Must be sync in user event
+    }
             performSearch();
         });
     }
