@@ -1,3 +1,6 @@
+
+console.log("Hello");
+
 // Generate or get visitor ID
 async function getOrCreateVisitorId() {
     let visitorId = localStorage.getItem('visitorId');
@@ -176,10 +179,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const gridColumns = parseInt(searchConfigDiv.getAttribute('data-grid-columns'), 10) || 1;
     const itemsPerPage = parseInt(searchConfigDiv.getAttribute('data-items-per-page'), 10) || 10;
     const resultType = searchConfigDiv.getAttribute('data-result-type') || "Click on search";
-    const searchBarType = searchConfigDiv.getAttribute('data-search-bar');
-    const resultPage = searchConfigDiv.getAttribute('data-result-page') || "Same page";
-    const shouldOpenInNewPage = resultPage === "New tab";
-
+    const searchBarType = searchConfigDiv.getAttribute('data-search-bar') 
 
     const maxItems = displayMode === "Grid" ? gridRows * gridColumns : itemsPerPage;
 
@@ -260,83 +260,17 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             resultsContainer.innerHTML = "";
 
-            // if ((selectedOption === "Pages" || selectedOption === "Both") && pageResults.length > 0) {
-            //     const container = document.createElement('div');
-            //     resultsContainer.appendChild(container);
-            //     renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container);
-            // }
+            if ((selectedOption === "Pages" || selectedOption === "Both") && pageResults.length > 0) {
+                const container = document.createElement('div');
+                resultsContainer.appendChild(container);
+                renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container);
+            }
 
-            // if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults.length > 0) {
-            //     const container = document.createElement('div');
-            //     resultsContainer.appendChild(container);
-            //     renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container);
-            // }
-            if (shouldOpenInNewPage) {
-    const container1 = document.createElement('div');
-    const container2 = document.createElement('div');
-
-    let resultsHTML = "";
-
-    if ((selectedOption === "Pages" || selectedOption === "Both") && pageResults.length > 0) {
-        renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container1);
-        resultsHTML += container1.innerHTML;
-    }
-
-    if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults.length > 0) {
-        renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container2);
-        resultsHTML += container2.innerHTML;
-    }
-
-    const newTab = window.open();
-    newTab.document.write(`
-        <html>
-        <head>
-            <title>Search Results</title>
-            <style>
-                body {
-                    font-family: sans-serif;
-                    padding: 2rem;
-                }
-                .search-results-wrapper {
-                    display: ${displayMode === 'Grid' ? 'grid' : 'block'};
-                    grid-template-columns: repeat(${gridColumns}, 1fr);
-                    gap: 1rem;
-                }
-                .search-result-item {
-                    padding: 1rem;
-                    border: 1px solid #ddd;
-                    border-radius: 6px;
-                    background: #fff;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-                }
-                h3 {
-                    margin-top: 2rem;
-                }
-            </style>
-        </head>
-        <body>
-            <h2>Search Results</h2>
-            ${resultsHTML}
-        </body>
-        </html>
-    `);
-    newTab.document.close();
-} else {
-    resultsContainer.innerHTML = "";
-
-    if ((selectedOption === "Pages" || selectedOption === "Both") && pageResults.length > 0) {
-        const container = document.createElement('div');
-        resultsContainer.appendChild(container);
-        renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container);
-    }
-
-    if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults.length > 0) {
-        const container = document.createElement('div');
-        resultsContainer.appendChild(container);
-        renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container);
-    }
-}
-
+            if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults.length > 0) {
+                const container = document.createElement('div');
+                resultsContainer.appendChild(container);
+                renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container);
+            }
 
         } catch (error) {
             console.warn("API search failed, falling back to page search.");
