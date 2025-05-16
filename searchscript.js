@@ -1,3 +1,6 @@
+
+console.log("Hello");
+
 // Generate or get visitor ID
 async function getOrCreateVisitorId() {
     let visitorId = localStorage.getItem('visitorId');
@@ -260,17 +263,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             resultsContainer.innerHTML = "";
 
-            // if ((selectedOption === "Pages" || selectedOption === "Both") && pageResults.length > 0) {
-            //     const container = document.createElement('div');
-            //     resultsContainer.appendChild(container);
-            //     renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container);
-            // }
-
-            // if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults.length > 0) {
-            //     const container = document.createElement('div');
-            //     resultsContainer.appendChild(container);
-            //     renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container);
-            // }
+           
             if (shouldOpenInNewPage) {
     const container1 = document.createElement('div');
     const container2 = document.createElement('div');
