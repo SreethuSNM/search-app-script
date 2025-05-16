@@ -183,12 +183,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     const resultPage = searchConfigDiv.getAttribute('data-result-page') || "Same page";
     const shouldOpenInNewPage = resultPage === "New Page";
 
-    const submitButton = form.querySelector("input[type='submit']");
-if (resultType === "Auto result" && submitButton) {
-    submitButton.style.display = "none";
-}
-
-
 
     const maxItems = displayMode === "Grid" ? gridRows * gridColumns : itemsPerPage;
 
@@ -200,6 +194,12 @@ if (resultType === "Auto result" && submitButton) {
     const resultsContainer = document.querySelector(".searchresults");
     const base_url = "https://search-server.long-rain-28bb.workers.dev";
     const siteName = window.location.hostname.replace(/^www\./, '').split('.')[0];
+
+    // ✅ Hide submit button if Auto result
+const submitButton = form?.querySelector("input[type='submit']");
+if (resultType === "Auto result" && submitButton) {
+    submitButton.style.display = "none";
+}
 
     if (!form || !input || !resultsContainer) {
         console.warn("Search form or elements not found.");
