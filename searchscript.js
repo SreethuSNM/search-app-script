@@ -78,14 +78,23 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
                 const imageUrl = (Array.isArray(value) && value[0]?.url)
                     || value.url || value.src || value.href;
 
-                if (imageUrl) {
-                    return `<p><strong>${key}:</strong><br><img src="${imageUrl}" alt="${key}" class="item-image" style="max-width: 100%; border-radius: 4px;" /></p>`;
-                }
+                // if (imageUrl) {
+                //     return `<p><strong>${key}:</strong><br><img src="${imageUrl}" alt="${key}" class="item-image" style="max-width: 100%; border-radius: 4px;" /></p>`;
+                // }
+
+    if (imageUrl) {
+    const imageStyle = displayMode === 'Grid'
+        ? 'max-width: 100%;'
+        : 'max-width: 50%;'; // Reduce width to 50% in List mode
+
+    return `<p><strong>${key}:</strong><br><img src="${imageUrl}" alt="${key}" class="item-image" style="${imageStyle} border-radius: 4px;" /></p>`;
+}
+
 
                 return `<p><strong>${key}:</strong> ${JSON.stringify(value)}</p>`;
             }
 
-            return `<p><strong>${key}:</strong> ${value}</p>`;
+            return `<p><strong>${key}:</strong> ${value}</p>`;    
         }).join("");
 
         return `
