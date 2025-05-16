@@ -183,6 +183,11 @@ document.addEventListener("DOMContentLoaded", async function () {
     const resultPage = searchConfigDiv.getAttribute('data-result-page') || "Same page";
     const shouldOpenInNewPage = resultPage === "New Page";
 
+    const submitButton = form.querySelector("input[type='submit']");
+if (resultType === "Auto result" && submitButton) {
+    submitButton.style.display = "none";
+}
+
 
 
     const maxItems = displayMode === "Grid" ? gridRows * gridColumns : itemsPerPage;
