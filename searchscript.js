@@ -170,6 +170,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const gridColumns = parseInt(searchConfigDiv.getAttribute('data-grid-columns'), 10) || 1;
     const itemsPerPage = parseInt(searchConfigDiv.getAttribute('data-items-per-page'), 10) || 10;
     const resultType = searchConfigDiv.getAttribute('data-result-type') || "Click on search";
+    const searchBarType = searchConfigDiv.getAttribute('data-search-bar') 
 
     const maxItems = displayMode === "Grid" ? gridRows * gridColumns : itemsPerPage;
 
@@ -192,6 +193,34 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     const token = await getVisitorSessionToken();
     console.log("Generated Token: ", token);
+
+     // === Implement Search Bar Display Mode ===
+  if (searchBarType === "Icon") {
+  // Hide form initially, show icon container (assumed to already exist)
+  form.style.display = "none";
+
+  const iconContainer = document.querySelector(".searchiconcontainer");
+  if (!iconContainer) {
+    console.error("❌ '.searchiconcontainer' element not found.");
+    return;
+  }
+
+  iconContainer.style.cursor = "pointer";
+  iconContainer.style.display = ""; // Make sure icon is visible
+
+  // On click show the form and hide the icon container
+  iconContainer.addEventListener("click", () => {
+    form.style.display = "";
+    iconContainer.style.display = "none";
+    input.focus();
+  });
+} else {
+  // Expand mode: show form and hide icon container if exists
+  form.style.display = "";
+  const iconContainer = document.querySelector(".searchiconcontainer");
+  if (iconContainer) iconContainer.style.display = "none";
+}
+
 
     async function performSearch() {
         const query = input.value.trim().toLowerCase();
