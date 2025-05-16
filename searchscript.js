@@ -349,14 +349,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     if (resultType === "Auto result") {
         input.addEventListener("input", debounce(performSearch, 500));
-         // Disable the search button in Auto result mode
-    const submitButton = form.querySelector("input[type='submit']");
-
-    if (submitButton) {
-        submitButton.disabled = true;
-        submitButton.style.opacity = "0.5"; // Optional: visually show it's disabled
-        submitButton.style.pointerEvents = "none"; // Optional: block interaction
-    }
     } else {
         form.addEventListener("submit", function (e) {
             e.preventDefault();
