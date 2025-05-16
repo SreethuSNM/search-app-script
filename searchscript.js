@@ -181,7 +181,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const resultType = searchConfigDiv.getAttribute('data-result-type') || "Click on search";
     const searchBarType = searchConfigDiv.getAttribute('data-search-bar');
     const resultPage = searchConfigDiv.getAttribute('data-result-page') || "Same page";
-   const shouldOpenInNewPage = resultPage === "New Page";
+    const shouldOpenInNewPage = resultPage === "New Page";
 
 
 
@@ -263,8 +263,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
             resultsContainer.innerHTML = "";
-
-           
+            
             if (shouldOpenInNewPage) {
     const container1 = document.createElement('div');
     const container2 = document.createElement('div');
@@ -343,10 +342,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     } else {
         form.addEventListener("submit", function (e) {
             e.preventDefault();
-             let newTab;
-    if (shouldOpenInNewPage) {
-        newTab = window.open(); // ✅ Must be sync in user event
-    }
             performSearch();
         });
     }
