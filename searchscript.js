@@ -65,7 +65,7 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
     const pagedResults = results.slice(startIndex, endIndex);
 
     const itemsHtml = pagedResults.map(item => {
-        const titleText = item.name || item.title || "Untitled";
+        
         const url = item.publishedPath || item.slug || "#";
         const matchedText = item.matchedText?.slice(0, 200) || "";
 
@@ -106,7 +106,7 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);` : `margin-bottom: 1rem;`
 }">
 
-            <h4><a href="${url}" target="_blank">${titleText}</a></h4>
+            
             ${matchedText ? `<p>${matchedText}...</p>` : fieldsHtml}
         </div>`;
     }).join("");
