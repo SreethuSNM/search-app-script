@@ -242,32 +242,32 @@ if (resultType === "Auto result" && submitButton) {
 
     async function performSearch() {
         const query = input.value.trim().toLowerCase();
-        if (!query) return;
+    if (!query) return;
 
-        resultsContainer.innerHTML = "<p>Searching...</p>";
+    resultsContainer.innerHTML = "<p>Searching...</p>";
 
-        try {
-            const headers = { Authorization: `Bearer ${token}` };
+    try {
+        const headers = { Authorization: `Bearer ${token}` };
 
-            const [pageRes, cmsRes] = await Promise.all([
-                fetch(`${base_url}/api/search-index?query=${encodeURIComponent(query)}&siteName=${siteName}`, { headers }),
-                fetch(`${base_url}/api/search-cms?query=${encodeURIComponent(query)}&siteName=${siteName}&collections=${collectionsParam}&fields=${fieldsParam}`, { headers }),
-            ]);
+        const res = await fetch(`${base_url}/api/search?query=${encodeURIComponent(query)}&siteName=${siteName}`, { headers });
 
-            const [pageData, cmsData] = await Promise.all([
-                pageRes.ok ? pageRes.json() : { results: [] },
-                cmsRes.ok ? cmsRes.json() : { results: [] },
-            ]);
+        let pageResults = [];
+        let cmsResults = [];
 
-            const pageResults = Array.isArray(pageData.results) ? pageData.results : [];
-            const cmsResults = Array.isArray(cmsData.results) ? cmsData.results : [];
+        if (res.ok) {
+            const data = await res.json();
+            pageResults = Array.isArray(data.pageResults) ? data.pageResults : [];
+            cmsResults = Array.isArray(data.cmsResults) ? data.cmsResults : [];
+        } else {
+            console.warn("Failed to fetch combined search results");
+        }
 
-            if (pageResults.length === 0 && cmsResults.length === 0) {
-                resultsContainer.innerHTML = "<p>No results found.</p>";
-                return;
-            }
+        if (pageResults.length === 0 && cmsResults.length === 0) {
+            resultsContainer.innerHTML = "<p>No results found.</p>";
+            return;
+        }
 
-            resultsContainer.innerHTML = "";
+        resultsContainer.innerHTML = "";
             
             if (shouldOpenInNewPage) {
     const container1 = document.createElement('div');
