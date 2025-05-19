@@ -1,3 +1,4 @@
+
 console.log("Hello");
 
 // Generate or get visitor ID
@@ -55,8 +56,7 @@ async function getVisitorSessionToken() {
 }
 
 // Render search results with pagination
-function renderResults(results, title, displayMode, maxItems, gridColumns = 3, paginationType = "None", container, currentPage = 1, type = "cms", displayFields = []) {
-
+function renderResults(results, title, displayMode, maxItems, gridColumns = 3, paginationType = "None", container, currentPage = 1) {
     if (!Array.isArray(results) || results.length === 0) return "";
 
     const totalPages = maxItems ? Math.ceil(results.length / maxItems) : 1;
@@ -65,54 +65,51 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
     const pagedResults = results.slice(startIndex, endIndex);
 
     const itemsHtml = pagedResults.map(item => {
-    const titleText = item.title || item.name || "Untitled";
-    const url = item.publishedPath || item.slug || "#";
-    const matchedText = item.matchedText?.slice(0, 200) || "";
+        const titleText = item.name || item.title || "Untitled";
+        const url = item.publishedPath || item.slug || "#";
+        const matchedText = item.matchedText?.slice(0, 200) || "";
 
-    if (type === "page") {
-        return `
-            <div class="search-result-item" style="margin-bottom: 1rem;">
-                <h4><a href="${url}" target="_blank">${titleText}</a></h4>
-                ${matchedText ? `<p>${matchedText}...</p>` : ""}
-            </div>`;
-    }
-
-    // For CMS type, retain existing logic
-    let fieldsHtml = displayFields.map(field => {
-        let value = item[field];
-        if (!value) return "";
-
-        if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
-            value = new Date(value).toLocaleString();
-        }
-
-        if (typeof value === 'object') {
-            const imageUrl = (Array.isArray(value) && value[0]?.url)
-                || value.url || value.src || value.href;
-
-            if (imageUrl) {
-                const imageStyle = displayMode === 'Grid' ? 'max-width: 100%;' : 'max-width: 50%;';
-                return `<p><strong>${field}:</strong><br><img src="${imageUrl}" alt="${field}" class="item-image" style="${imageStyle} border-radius: 4px;" /></p>`;
+        const fieldsHtml = Object.entries(item).map(([key, value]) => {
+            if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
+                value = new Date(value).toLocaleString();
             }
 
-            return `<p><strong>${field}:</strong> ${JSON.stringify(value)}</p>`;
-        }
+            if (typeof value === 'object' && value !== null) {
+                const imageUrl = (Array.isArray(value) && value[0]?.url)
+                    || value.url || value.src || value.href;
 
-        return `<p><strong>${field}:</strong> ${value}</p>`;
-    }).join("");
+                // if (imageUrl) {
+                //     return `<p><strong>${key}:</strong><br><img src="${imageUrl}" alt="${key}" class="item-image" style="max-width: 100%; border-radius: 4px;" /></p>`;
+                // }
 
-    return `
-        <div class="search-result-item" style="${displayMode === 'Grid' ? `
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 1rem;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);` : `margin-bottom: 1rem;`
-        }">
+    if (imageUrl) {
+    const imageStyle = displayMode === 'Grid'
+        ? 'max-width: 100%;'
+        : 'max-width: 50%;'; // Reduce width to 50% in List mode
+
+    return `<p><strong>${key}:</strong><br><img src="${imageUrl}" alt="${key}" class="item-image" style="${imageStyle} border-radius: 4px;" /></p>`;
+}
+
+
+                return `<p><strong>${key}:</strong> ${JSON.stringify(value)}</p>`;
+            }
+
+            return `<p><strong>${key}:</strong> ${value}</p>`;    
+        }).join("");
+
+        return `
+           <div class="search-result-item" style="${displayMode === 'Grid' ? `
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);` : `margin-bottom: 1rem;`
+}">
+
             <h4><a href="${url}" target="_blank">${titleText}</a></h4>
-            ${fieldsHtml}
+            ${matchedText ? `<p>${matchedText}...</p>` : fieldsHtml}
         </div>`;
-}).join("");
+    }).join("");
 
     let paginationHtml = "";
     if (paginationType === "Numbered" && totalPages > 1) {
@@ -282,13 +279,12 @@ if (resultType === "Auto result" && submitButton) {
     let resultsHTML = "";
 
     if ((selectedOption === "Pages" || selectedOption === "Both") && pageResults.length > 0) {
-  
-renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container, 1, "page");
- resultsHTML += container1.innerHTML;
+        renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container1);
+        resultsHTML += container1.innerHTML;
     }
 
     if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults.length > 0) {
-        renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container, 1, "cms", selectedFieldsDisplay);
+        renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container2);
         resultsHTML += container2.innerHTML;
     }
 
