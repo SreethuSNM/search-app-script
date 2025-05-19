@@ -65,7 +65,7 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
     const pagedResults = results.slice(startIndex, endIndex);
 
     const itemsHtml = pagedResults.map(item => {
-        const titleText = item.name || item.title || "Untitled";
+        // const titleText = item.name || item.title || "Untitled";
         const url = item.publishedPath || item.slug || "#";
         const matchedText = item.matchedText?.slice(0, 200) || "";
 
