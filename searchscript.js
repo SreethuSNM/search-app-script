@@ -98,9 +98,10 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
             return `<p><strong>${key}:</strong> ${value}</p>`;    
         }).join("");
 
-        const titleHtml = isPageResult
-      ? `<h4><a href="${url}" target="_blank">${titleText}</a></h4>`
-      : `<h4>${titleText}</h4>`;
+       const titleHtml = isPageResult
+  ? `<h4><a href="${url}" target="_blank">${titleText}</a></h4>`
+  : '';  // No title for CMS results
+
 
 
         return `
