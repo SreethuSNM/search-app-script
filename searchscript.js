@@ -56,7 +56,7 @@ async function getVisitorSessionToken() {
 }
 
 // Render search results with pagination
-function renderResults(results, title, displayMode, maxItems, gridColumns = 3, paginationType = "None", container, currentPage = 1, isPageResult = true, selectedFieldsDisplay = []) {
+function renderResults(results, title, displayMode, maxItems, gridColumns = 3, paginationType = "None", container, currentPage = 1, isPageResult = true) {
 
     if (!Array.isArray(results) || results.length === 0) return "";
 
@@ -98,18 +98,9 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
             return `<p><strong>${key}:</strong> ${value}</p>`;    
         }).join("");
 
-  //      const titleHtml = isPageResult
-  // ? `<h4><a href="${url}" target="_blank">${titleText}</a></h4>`
-  // : '';  // No title for CMS results
-
-       // Example: selectedFieldsDisplay is an array of field names to display
-const hasDisplayFields = selectedFieldsDisplay.some(field => field in item);
-
-const titleHtml = isPageResult
+       const titleHtml = isPageResult
   ? `<h4><a href="${url}" target="_blank">${titleText}</a></h4>`
-  : (hasDisplayFields ? '' : `<h4>${titleText}</h4>`);
-
-
+  : '';  // No title for CMS results
 
 
         return `
