@@ -1,3 +1,4 @@
+
 console.log("Hello");
 
 // Generate or get visitor ID
@@ -54,33 +55,7 @@ async function getVisitorSessionToken() {
     }
 }
 
-// ====== NEW: Warm-up cache and warm-up fetch function ======
-const warmUpCache = {};
-
-async function warmUpSearch() {
-    try {
-        const token = await getVisitorSessionToken();
-        const warmUpQuery = ""; // empty query to warm up API
-        const siteName = window.location.hostname.replace(/^www\./, '').split('.')[0];
-        const base_url = "https://search-server.long-rain-28bb.workers.dev";
-
-        const response = await fetch(`${base_url}/api/search-index?query=${encodeURIComponent(warmUpQuery)}&siteName=${siteName}`, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            warmUpCache[warmUpQuery] = data.results || [];
-            console.log("API warm-up fetch complete");
-        }
-    } catch (e) {
-        console.warn("Warm-up fetch failed:", e);
-    }
-}
-// ====== END NEW ======
-
-
-// Render search results with pagination (your existing function unchanged)
+// Render search results with pagination
 function renderResults(results, title, displayMode, maxItems, gridColumns = 3, paginationType = "None", container, currentPage = 1) {
     if (!Array.isArray(results) || results.length === 0) return "";
 
@@ -103,13 +78,18 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
                 const imageUrl = (Array.isArray(value) && value[0]?.url)
                     || value.url || value.src || value.href;
 
-                if (imageUrl) {
-                    const imageStyle = displayMode === 'Grid'
-                        ? 'max-width: 100%;'
-                        : 'max-width: 50%;'; // Reduce width to 50% in List mode
+                // if (imageUrl) {
+                //     return `<p><strong>${key}:</strong><br><img src="${imageUrl}" alt="${key}" class="item-image" style="max-width: 100%; border-radius: 4px;" /></p>`;
+                // }
 
-                    return `<p><strong>${key}:</strong><br><img src="${imageUrl}" alt="${key}" class="item-image" style="${imageStyle} border-radius: 4px;" /></p>`;
-                }
+    if (imageUrl) {
+    const imageStyle = displayMode === 'Grid'
+        ? 'max-width: 100%;'
+        : 'max-width: 50%;'; // Reduce width to 50% in List mode
+
+    return `<p><strong>${key}:</strong><br><img src="${imageUrl}" alt="${key}" class="item-image" style="${imageStyle} border-radius: 4px;" /></p>`;
+}
+
 
                 return `<p><strong>${key}:</strong> ${JSON.stringify(value)}</p>`;
             }
@@ -125,6 +105,7 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
     padding: 1rem;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);` : `margin-bottom: 1rem;`
 }">
+
             <h4><a href="${url}" target="_blank">${titleText}</a></h4>
             ${matchedText ? `<p>${matchedText}...</p>` : fieldsHtml}
         </div>`;
@@ -151,6 +132,7 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
   grid-template-columns: repeat(${gridColumns}, 1fr);
   gap: 1rem;
 ">
+
                 ${itemsHtml}
             </div>
             ${paginationHtml}
@@ -180,12 +162,7 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
     return sectionHtml;
 }
 
-
 document.addEventListener("DOMContentLoaded", async function () {
-    // ====== NEW: Trigger warm-up fetch ASAP ======
-    warmUpSearch();
-    // ====== END NEW ======
-
     const searchConfigDiv = document.querySelector('#search-config');
 
     if (!searchConfigDiv) {
@@ -206,6 +183,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const resultPage = searchConfigDiv.getAttribute('data-result-page') || "Same page";
     const shouldOpenInNewPage = resultPage === "New Page";
 
+
     const maxItems = displayMode === "Grid" ? gridRows * gridColumns : itemsPerPage;
 
     const collectionsParam = encodeURIComponent(JSON.stringify(selectedCollections));
@@ -217,11 +195,11 @@ document.addEventListener("DOMContentLoaded", async function () {
     const base_url = "https://search-server.long-rain-28bb.workers.dev";
     const siteName = window.location.hostname.replace(/^www\./, '').split('.')[0];
 
-    // Hide submit button if Auto result
-    const submitButton = form?.querySelector("input[type='submit']");
-    if (resultType === "Auto result" && submitButton) {
-        submitButton.style.display = "none";
-    }
+    // ✅ Hide submit button if Auto result
+const submitButton = form?.querySelector("input[type='submit']");
+if (resultType === "Auto result" && submitButton) {
+    submitButton.style.display = "none";
+}
 
     if (!form || !input || !resultsContainer) {
         console.warn("Search form or elements not found.");
@@ -234,78 +212,150 @@ document.addEventListener("DOMContentLoaded", async function () {
     const token = await getVisitorSessionToken();
     console.log("Generated Token: ", token);
 
-    // Search Bar Display Mode
-    if (searchBarType === "Square") {
-        input.style.borderRadius = "0px";
-        input.style.border = "1px solid #ddd";
-    }
+     // === Implement Search Bar Display Mode ===
+  if (searchBarType === "Icon") {
+  // Hide form initially, show icon container (assumed to already exist)
+  form.style.display = "none";
+
+  const iconContainer = document.querySelector(".searchiconcontainer");
+  if (!iconContainer) {
+    console.error("❌ '.searchiconcontainer' element not found.");
+    return;
+  }
+
+  iconContainer.style.cursor = "pointer";
+  iconContainer.style.display = ""; // Make sure icon is visible
+
+  // On click show the form and hide the icon container
+  iconContainer.addEventListener("click", () => {
+    form.style.display = "";
+    iconContainer.style.display = "none";
+    input.focus();
+  });
+} else {
+  // Expand mode: show form and hide icon container if exists
+  form.style.display = "";
+  const iconContainer = document.querySelector(".searchiconcontainer");
+  if (iconContainer) iconContainer.style.display = "none";
+}
+
 
     async function performSearch() {
         const query = input.value.trim().toLowerCase();
-        if (!query) {
-            resultsContainer.innerHTML = "";
-            return;
-        }
-
-        // ====== NEW: Use cache first if available ======
-        if (warmUpCache[query]) {
-            console.log("Using cached warm-up results");
-            resultsContainer.innerHTML = "";
-            const container = document.createElement('div');
-            resultsContainer.appendChild(container);
-            renderResults(warmUpCache[query], "Page Results", displayMode, maxItems, gridColumns, paginationType, container, 1);
-            return;
-        }
-        // ====== END NEW ======
+        if (!query) return;
 
         resultsContainer.innerHTML = "<p>Searching...</p>";
 
         try {
             const headers = { Authorization: `Bearer ${token}` };
 
-            let pageResults = [];
-            let collectionResults = [];
+            const [pageRes, cmsRes] = await Promise.all([
+                fetch(`${base_url}/api/search-index?query=${encodeURIComponent(query)}&siteName=${siteName}`, { headers }),
+                fetch(`${base_url}/api/search-cms?query=${encodeURIComponent(query)}&siteName=${siteName}&collections=${collectionsParam}&fields=${fieldsParam}`, { headers }),
+            ]);
 
-            if (selectedOption === "Page search" || selectedOption === "Both") {
-                const pageResponse = await fetch(`${base_url}/api/search-index?query=${encodeURIComponent(query)}&siteName=${siteName}`, {
-                    headers,
-                });
-                if (pageResponse.ok) {
-                    const pageData = await pageResponse.json();
-                    pageResults = pageData.results || [];
-                }
+            const [pageData, cmsData] = await Promise.all([
+                pageRes.ok ? pageRes.json() : { results: [] },
+                cmsRes.ok ? cmsRes.json() : { results: [] },
+            ]);
+
+            const pageResults = Array.isArray(pageData.results) ? pageData.results : [];
+            const cmsResults = Array.isArray(cmsData.results) ? cmsData.results : [];
+
+            if (pageResults.length === 0 && cmsResults.length === 0) {
+                resultsContainer.innerHTML = "<p>No results found.</p>";
+                return;
             }
-
-            if (selectedOption === "Collection search" || selectedOption === "Both") {
-                const collectionResponse = await fetch(`${base_url}/api/collection-search?query=${encodeURIComponent(query)}&siteName=${siteName}&collections=${collectionsParam}&fields=${fieldsParam}`, {
-                    headers,
-                });
-                if (collectionResponse.ok) {
-                    const collectionData = await collectionResponse.json();
-                    collectionResults = collectionData.results || [];
-                }
-            }
-
-            const combinedResults = [...pageResults, ...collectionResults];
 
             resultsContainer.innerHTML = "";
+            
+            if (shouldOpenInNewPage) {
+    const container1 = document.createElement('div');
+    const container2 = document.createElement('div');
 
-            const container = document.createElement('div');
-            resultsContainer.appendChild(container);
+    let resultsHTML = "";
 
-            renderResults(combinedResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container, 1);
+    if ((selectedOption === "Pages" || selectedOption === "Both") && pageResults.length > 0) {
+        renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container1);
+        resultsHTML += container1.innerHTML;
+    }
+
+    if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults.length > 0) {
+        renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container2);
+        resultsHTML += container2.innerHTML;
+    }
+
+    const newTab = window.open();
+    newTab.document.write(`
+        <html>
+        <head>
+            <title>Search Results</title>
+            <style>
+                body {
+                    font-family: sans-serif;
+                    padding: 2rem;
+                }
+                .search-results-wrapper {
+                    display: ${displayMode === 'Grid' ? 'grid' : 'block'};
+                    grid-template-columns: repeat(${gridColumns}, 1fr);
+                    gap: 1rem;
+                }
+                .search-result-item {
+                    padding: 1rem;
+                    border: 1px solid #ddd;
+                    border-radius: 6px;
+                    background: #fff;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                }
+                h3 {
+                    margin-top: 2rem;
+                }
+            </style>
+        </head>
+        <body>
+            <h2>Search Results</h2>
+            ${resultsHTML}
+        </body>
+        </html>
+    `);
+    newTab.document.close();
+} else {
+    resultsContainer.innerHTML = "";
+
+    if ((selectedOption === "Pages" || selectedOption === "Both") && pageResults.length > 0) {
+        const container = document.createElement('div');
+        resultsContainer.appendChild(container);
+        renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container);
+    }
+
+    if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults.length > 0) {
+        const container = document.createElement('div');
+        resultsContainer.appendChild(container);
+        renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container);
+    }
+}
+
+
         } catch (error) {
-            console.error("Error performing search:", error);
-            resultsContainer.innerHTML = "<p>Error occurred while searching. Please try again.</p>";
+            console.warn("API search failed, falling back to page search.");
+            resultsContainer.innerHTML = "<p>No results found.</p>";
         }
     }
 
     if (resultType === "Auto result") {
-        input.addEventListener("input", performSearch);
+        input.addEventListener("input", debounce(performSearch, 500));
     } else {
-        form.addEventListener("submit", function (event) {
-            event.preventDefault();
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
             performSearch();
         });
+    }
+
+    function debounce(fn, delay) {
+        let timer;
+        return function (...args) {
+            clearTimeout(timer);
+            timer = setTimeout(() => fn.apply(this, args), delay);
+        };
     }
 });
