@@ -56,7 +56,7 @@ async function getVisitorSessionToken() {
 }
 
 // Render search results with pagination
-function renderResults(results, title, displayMode, maxItems, gridColumns = 3, paginationType = "None", container, currentPage = 1, isPageResult = true) {
+function renderResults(results, title, displayMode, maxItems, gridColumns = 3, paginationType = "None", container, currentPage = 1, isPageResult = true, selectedFieldsDisplay = []) {
 
     if (!Array.isArray(results) || results.length === 0) return "";
 
