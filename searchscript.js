@@ -171,7 +171,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     const selectedCollections = JSON.parse(searchConfigDiv.getAttribute('data-selected-collections') || '[]');
-    const selectedFields = JSON.parse(searchConfigDiv.getAttribute('data-selected-fields') || '[]');
+    const selectedFieldsSearch = JSON.parse(searchConfigDiv.getAttribute('data-selected-fields-search') || '[]');
+    const selectedFieldsDisplay = JSON.parse(searchConfigDiv.getAttribute('data-selected-fields-display') || '[]');
     const selectedOption = searchConfigDiv.getAttribute('data-selected-option');
     const displayMode = searchConfigDiv.getAttribute('data-display-mode');
     const paginationType = searchConfigDiv.getAttribute('data-pagination-type') || "None";
@@ -187,7 +188,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     const maxItems = displayMode === "Grid" ? gridRows * gridColumns : itemsPerPage;
 
     const collectionsParam = encodeURIComponent(JSON.stringify(selectedCollections));
-    const fieldsParam = encodeURIComponent(JSON.stringify(selectedFields));
+    const fieldsSearchParam = encodeURIComponent(JSON.stringify(selectedFieldsSearch));
+const fieldsDisplayParam = encodeURIComponent(JSON.stringify(selectedFieldsDisplay));
 
     const form = document.querySelector(".w-form, #search-form");
     const input = document.querySelector("input[name='query']");
@@ -251,7 +253,8 @@ if (resultType === "Auto result" && submitButton) {
 
             const [pageRes, cmsRes] = await Promise.all([
                 fetch(`${base_url}/api/search-index?query=${encodeURIComponent(query)}&siteName=${siteName}`, { headers }),
-                fetch(`${base_url}/api/search-cms?query=${encodeURIComponent(query)}&siteName=${siteName}&collections=${collectionsParam}&fields=${fieldsParam}`, { headers }),
+                fetch(`${base_url}/api/search-cms?query=${encodeURIComponent(query)}&siteName=${siteName}&collections=${collectionsParam}&searchFields=${fieldsSearchParam}&displayFields=${fieldsDisplayParam}`,{ headers });
+
             ]);
 
             const [pageData, cmsData] = await Promise.all([
