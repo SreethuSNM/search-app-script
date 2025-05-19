@@ -64,10 +64,10 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
     const endIndex = maxItems ? startIndex + maxItems : results.length;
     const pagedResults = results.slice(startIndex, endIndex);
 
-    const itemsHtml = pagedResults.map(item => {
-        const titleText = item.name || item.title || "Untitled";
-        const url = item.publishedPath || item.slug || "#";
-        const matchedText = item.matchedText?.slice(0, 200) || "";
+   const itemsHtml = pagedResults.map(item => {
+    const titleText = item.name || item.title || "Untitled";
+    const url = item.publishedPath || item.slug || "#";
+    const matchedText = item.matchedText?.slice(0, 200) || "";
 
         const fieldsHtml = Object.entries(item).map(([key, value]) => {
             if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
@@ -97,6 +97,11 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
             return `<p><strong>${key}:</strong> ${value}</p>`;    
         }).join("");
 
+        const titleHtml = isPageResult
+      ? `<h4><a href="${url}" target="_blank">${titleText}</a></h4>`
+      : `<h4>${titleText}</h4>`;
+
+
         return `
            <div class="search-result-item" style="${displayMode === 'Grid' ? `
     background: #fff;
@@ -106,8 +111,8 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);` : `margin-bottom: 1rem;`
 }">
 
-            <h4><a href="${url}" target="_blank">${titleText}</a></h4>
-            ${matchedText ? `<p>${matchedText}...</p>` : fieldsHtml}
+            ${titleHtml}
+        ${matchedText ? `<p>${matchedText}...</p>` : fieldsHtml}
         </div>`;
     }).join("");
 
@@ -279,13 +284,14 @@ if (resultType === "Auto result" && submitButton) {
     let resultsHTML = "";
 
     if ((selectedOption === "Pages" || selectedOption === "Both") && pageResults.length > 0) {
-        renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container1);
-        resultsHTML += container1.innerHTML;
+        renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container1, 1, true); // isPageResult = true
+  resultsHTML += container1.innerHTML;
+        
     }
 
     if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults.length > 0) {
-        renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container2);
-        resultsHTML += container2.innerHTML;
+        renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container2, 1, false); // isPageResult = false
+  resultsHTML += container2.innerHTML;
     }
 
     const newTab = window.open();
