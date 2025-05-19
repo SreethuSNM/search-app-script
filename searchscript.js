@@ -56,7 +56,8 @@ async function getVisitorSessionToken() {
 }
 
 // Render search results with pagination
-function renderResults(results, title, displayMode, maxItems, gridColumns = 3, paginationType = "None", container, currentPage = 1) {
+function renderResults(results, title, displayMode, maxItems, gridColumns = 3, paginationType = "None", container, currentPage = 1, isPageResult = true) {
+
     if (!Array.isArray(results) || results.length === 0) return "";
 
     const totalPages = maxItems ? Math.ceil(results.length / maxItems) : 1;
@@ -334,13 +335,18 @@ if (resultType === "Auto result" && submitButton) {
     if ((selectedOption === "Pages" || selectedOption === "Both") && pageResults.length > 0) {
         const container = document.createElement('div');
         resultsContainer.appendChild(container);
-        renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container);
+       
+        renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container, 1, true);
+
+
     }
 
     if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults.length > 0) {
         const container = document.createElement('div');
         resultsContainer.appendChild(container);
-        renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container);
+       
+renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container, 1, false);
+
     }
 }
 
