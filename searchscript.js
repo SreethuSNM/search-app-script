@@ -103,33 +103,21 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
   : '';  // No title for CMS results
 
 
-//         return `
-//            <div class="search-result-item" style="${displayMode === 'Grid' ? `
-//     background: #fff;
-//     border: 1px solid #ddd;
-//     border-radius: 8px;
-//     padding: 1rem;
-//     box-shadow: 0 2px 6px rgba(0,0,0,0.1);` : `margin-bottom: 1rem;`
-// }">
 
-       const commonCardStyle = `
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 1rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-`;
 
-const listExtraStyle = `
-  margin-bottom: 1rem;
-`;
-
-return `
-  <div class="search-result-item" style="${commonCardStyle} ${displayMode === 'List' ? listExtraStyle : ''}">
+      return `
+  <div class="search-result-item" style="
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  ">
     ${titleHtml}
     ${matchedText ? `<p>${matchedText}...</p>` : fieldsHtml}
-  </div>`;
-    }).join("");
+  </div>
+`; }).join("");
 
     let paginationHtml = "";
     if (paginationType === "Numbered" && totalPages > 1) {
