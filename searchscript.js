@@ -1,4 +1,3 @@
-
 console.log("Hello");
 
 // Generate or get visitor ID
@@ -66,36 +65,41 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
     const pagedResults = results.slice(startIndex, endIndex);
 
     const itemsHtml = pagedResults.map(item => {
-    const titleText = item.name || item.title || "Untitled";
+    const titleText = item.title || item.name || "Untitled";
     const url = item.publishedPath || item.slug || "#";
     const matchedText = item.matchedText?.slice(0, 200) || "";
 
-    let fieldsHtml = "";
-
-    if (type === "cms") {
-        fieldsHtml = displayFields.map(field => {
-            let value = item[field];
-            if (!value) return "";
-
-            if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
-                value = new Date(value).toLocaleString();
-            }
-
-            if (typeof value === 'object') {
-                const imageUrl = (Array.isArray(value) && value[0]?.url)
-                    || value.url || value.src || value.href;
-
-                if (imageUrl) {
-                    const imageStyle = displayMode === 'Grid' ? 'max-width: 100%;' : 'max-width: 50%;';
-                    return `<p><strong>${field}:</strong><br><img src="${imageUrl}" alt="${field}" class="item-image" style="${imageStyle} border-radius: 4px;" /></p>`;
-                }
-
-                return `<p><strong>${field}:</strong> ${JSON.stringify(value)}</p>`;
-            }
-
-            return `<p><strong>${field}:</strong> ${value}</p>`;
-        }).join("");
+    if (type === "page") {
+        return `
+            <div class="search-result-item" style="margin-bottom: 1rem;">
+                <h4><a href="${url}" target="_blank">${titleText}</a></h4>
+                ${matchedText ? `<p>${matchedText}...</p>` : ""}
+            </div>`;
     }
+
+    // For CMS type, retain existing logic
+    let fieldsHtml = displayFields.map(field => {
+        let value = item[field];
+        if (!value) return "";
+
+        if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
+            value = new Date(value).toLocaleString();
+        }
+
+        if (typeof value === 'object') {
+            const imageUrl = (Array.isArray(value) && value[0]?.url)
+                || value.url || value.src || value.href;
+
+            if (imageUrl) {
+                const imageStyle = displayMode === 'Grid' ? 'max-width: 100%;' : 'max-width: 50%;';
+                return `<p><strong>${field}:</strong><br><img src="${imageUrl}" alt="${field}" class="item-image" style="${imageStyle} border-radius: 4px;" /></p>`;
+            }
+
+            return `<p><strong>${field}:</strong> ${JSON.stringify(value)}</p>`;
+        }
+
+        return `<p><strong>${field}:</strong> ${value}</p>`;
+    }).join("");
 
     return `
         <div class="search-result-item" style="${displayMode === 'Grid' ? `
@@ -106,11 +110,9 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);` : `margin-bottom: 1rem;`
         }">
             <h4><a href="${url}" target="_blank">${titleText}</a></h4>
-            ${type === 'page' && matchedText ? `<p>${matchedText}...</p>` : ""}
-            ${type === 'cms' ? fieldsHtml : ""}
+            ${fieldsHtml}
         </div>`;
 }).join("");
-
 
     let paginationHtml = "";
     if (paginationType === "Numbered" && totalPages > 1) {
