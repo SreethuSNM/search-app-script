@@ -1,4 +1,3 @@
-
 console.log("Hello");
 
 // Generate or get visitor ID
@@ -55,9 +54,19 @@ async function getVisitorSessionToken() {
     }
 }
 
-// Render search results with pagination
-function renderResults(results, title, displayMode, maxItems, gridColumns = 3, paginationType = "None", container, currentPage = 1, isPageResult = true) {
-
+// Render search results with pagination and styling
+function renderResults(
+    results,
+    title,
+    displayMode,
+    maxItems,
+    gridColumns = 3,
+    paginationType = "None",
+    container,
+    currentPage = 1,
+    isPageResult = true,
+    styles = {}
+) {
     if (!Array.isArray(results) || results.length === 0) return "";
 
     const totalPages = maxItems ? Math.ceil(results.length / maxItems) : 1;
@@ -65,59 +74,64 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
     const endIndex = maxItems ? startIndex + maxItems : results.length;
     const pagedResults = results.slice(startIndex, endIndex);
 
-   const itemsHtml = pagedResults.map(item => {
-    const titleText = item.name || item.title || "Untitled";
-    const url = item.publishedPath || item.slug || "#";
-    const matchedText = item.matchedText?.slice(0, 200) || "";
+    const {
+        titleFontSize = "16px",
+        titleFontFamily = "Arial",
+        titleColor = "#000",
+        borderRadius = "6px",
+        otherFieldsColor = "#333",
+        otherFieldsFontSize = "14px",
+    } = styles;
 
-        const fieldsHtml = Object.entries(item).map(([key, value]) => {
-            if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
-                value = new Date(value).toLocaleString();
-            }
+    const itemsHtml = pagedResults
+        .map((item) => {
+            const titleText = item.name || item.title || "Untitled";
+            const url = item.publishedPath || item.slug || "#";
+            const matchedText = item.matchedText?.slice(0, 200) || "";
 
-            if (typeof value === 'object' && value !== null) {
-                const imageUrl = (Array.isArray(value) && value[0]?.url)
-                    || value.url || value.src || value.href;
+            const fieldsHtml = Object.entries(item)
+                .map(([key, value]) => {
+                    if (typeof value === "string" && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
+                        value = new Date(value).toLocaleString();
+                    }
 
-                // if (imageUrl) {
-                //     return `<p><strong>${key}:</strong><br><img src="${imageUrl}" alt="${key}" class="item-image" style="max-width: 100%; border-radius: 4px;" /></p>`;
-                // }
+                    if (typeof value === "object" && value !== null) {
+                        const imageUrl =
+                            (Array.isArray(value) && value[0]?.url) || value.url || value.src || value.href;
 
-    if (imageUrl) {
-    const imageStyle = displayMode === 'Grid'
-        ? 'max-width: 100%;'
-        : 'max-width: 50%;'; // Reduce width to 50% in List mode
+                        if (imageUrl) {
+                            const imageStyle =
+                                displayMode === "Grid" ? "max-width: 100%;" : "max-width: 50%;";
 
-    return `<p><strong>${key}:</strong><br><img src="${imageUrl}" alt="${key}" class="item-image" style="${imageStyle} border-radius: 4px;" /></p>`;
-}
+                            return `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};"><strong>${key}:</strong><br><img src="${imageUrl}" alt="${key}" class="item-image" style="${imageStyle} border-radius: 4px;" /></p>`;
+                        }
 
+                        return `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};"><strong>${key}:</strong> ${JSON.stringify(value)}</p>`;
+                    }
 
-                return `<p><strong>${key}:</strong> ${JSON.stringify(value)}</p>`;
-            }
+                    return `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};"><strong>${key}:</strong> ${value}</p>`;
+                })
+                .join("");
 
-            return `<p><strong>${key}:</strong> ${value}</p>`;    
-        }).join("");
+            const titleHtml = isPageResult
+                ? `<h4 style="font-size: ${titleFontSize}; font-family: ${titleFontFamily}; color: ${titleColor}; margin-bottom: 0.5rem;"><a href="${url}" target="_blank" style="color: inherit; text-decoration: none;">${titleText}</a></h4>`
+                : ""; // No title for CMS results
 
-       const titleHtml = isPageResult
-  ? `<h4><a href="${url}" target="_blank">${titleText}</a></h4>`
-  : '';  // No title for CMS results
-
-
-
-
-      return `
-  <div class="search-result-item" style="
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  ">
-    ${titleHtml}
-    ${matchedText ? `<p>${matchedText}...</p>` : fieldsHtml}
-  </div>
-`; }).join("");
+            return `
+      <div class="search-result-item" style="
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: ${borderRadius};
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      ">
+        ${titleHtml}
+        ${matchedText ? `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${matchedText}...</p>` : fieldsHtml}
+      </div>
+    `;
+        })
+        .join("");
 
     let paginationHtml = "";
     if (paginationType === "Numbered" && totalPages > 1) {
@@ -136,11 +150,10 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
         <section style="margin-top: 2rem;">
             <h3>${title}</h3>
             <div class="search-results-wrapper" style="
-  display: ${displayMode === 'Grid' ? 'grid' : 'block'};
-  grid-template-columns: repeat(${gridColumns}, 1fr);
-  gap: 1rem;
-">
-
+      display: ${displayMode === "Grid" ? "grid" : "block"};
+      grid-template-columns: repeat(${gridColumns}, 1fr);
+      gap: 1rem;
+    ">
                 ${itemsHtml}
             </div>
             ${paginationHtml}
@@ -149,19 +162,41 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
     if (container) {
         container.innerHTML = sectionHtml;
         if (paginationType === "Numbered") {
-            container.querySelectorAll('.pagination-button').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const page = parseInt(btn.getAttribute('data-page'));
-                    renderResults(results, title, displayMode, maxItems, gridColumns, paginationType, container, page);
+            container.querySelectorAll(".pagination-button").forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    const page = parseInt(btn.getAttribute("data-page"));
+                    renderResults(
+                        results,
+                        title,
+                        displayMode,
+                        maxItems,
+                        gridColumns,
+                        paginationType,
+                        container,
+                        page,
+                        isPageResult,
+                        styles
+                    );
                 });
             });
         }
 
         if (paginationType === "Load More") {
-            const loadBtn = container.querySelector('.load-more-button');
+            const loadBtn = container.querySelector(".load-more-button");
             if (loadBtn) {
-                loadBtn.addEventListener('click', () => {
-                    renderResults(results, title, displayMode, endIndex + maxItems, gridColumns, paginationType, container, 1);
+                loadBtn.addEventListener("click", () => {
+                    renderResults(
+                        results,
+                        title,
+                        displayMode,
+                        endIndex + maxItems,
+                        gridColumns,
+                        paginationType,
+                        container,
+                        1,
+                        isPageResult,
+                        styles
+                    );
                 });
             }
         }
@@ -171,45 +206,61 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
 }
 
 document.addEventListener("DOMContentLoaded", async function () {
-    const searchConfigDiv = document.querySelector('#search-config');
+    const searchConfigDiv = document.querySelector("#search-config");
 
     if (!searchConfigDiv) {
         console.error("❌ 'search-config' div not found.");
         return;
     }
 
-    const selectedCollections = JSON.parse(searchConfigDiv.getAttribute('data-selected-collections') || '[]');
-    const selectedFieldsSearch = JSON.parse(searchConfigDiv.getAttribute('data-selected-fields-search') || '[]');
-    const selectedFieldsDisplay = JSON.parse(searchConfigDiv.getAttribute('data-selected-fields-display') || '[]');
-    const selectedOption = searchConfigDiv.getAttribute('data-selected-option');
-    const displayMode = searchConfigDiv.getAttribute('data-display-mode');
-    const paginationType = searchConfigDiv.getAttribute('data-pagination-type') || "None";
-    const gridRows = parseInt(searchConfigDiv.getAttribute('data-grid-rows'), 10) || 1;
-    const gridColumns = parseInt(searchConfigDiv.getAttribute('data-grid-columns'), 10) || 1;
-    const itemsPerPage = parseInt(searchConfigDiv.getAttribute('data-items-per-page'), 10) || 10;
-    const resultType = searchConfigDiv.getAttribute('data-result-type') || "Click on search";
-    const searchBarType = searchConfigDiv.getAttribute('data-search-bar');
-    const resultPage = searchConfigDiv.getAttribute('data-result-page') || "Same page";
-    const shouldOpenInNewPage = resultPage === "New Page";
+    // Read config attributes from #search-config div
+    const selectedCollections = JSON.parse(searchConfigDiv.getAttribute("data-selected-collections") || "[]");
+    const selectedFieldsSearch = JSON.parse(searchConfigDiv.getAttribute("data-selected-fields-search") || "[]");
+    const selectedFieldsDisplay = JSON.parse(searchConfigDiv.getAttribute("data-selected-fields-display") || "[]");
+    const selectedOption = searchConfigDiv.getAttribute("data-selected-option");
+    const displayMode = searchConfigDiv.getAttribute("data-display-mode");
+    const paginationType = searchConfigDiv.getAttribute("data-pagination-type") || "None";
+    const gridRows = parseInt(searchConfigDiv.getAttribute("data-grid-rows"), 10) || 1;
+    const gridColumns = parseInt(searchConfigDiv.getAttribute("data-grid-columns"), 10) || 1;
+    const itemsPerPage = parseInt(searchConfigDiv.getAttribute("data-items-per-page"), 10) || 10;
+    const resultType = searchConfigDiv.getAttribute("data-result-type") || "Click on search";
+    const searchBarType = searchConfigDiv.getAttribute("data-search-bar");
+    const resultPage = searchConfigDiv.getAttribute("data-result-page") || "Same page";
 
+    // Style attributes from search-config
+    const titleFontSize = searchConfigDiv.getAttribute("data-title-font-size") || "16px";
+    const titleFontFamily = searchConfigDiv.getAttribute("data-title-font-family") || "Arial";
+    const titleColor = searchConfigDiv.getAttribute("data-title-color") || "#000";
+    const borderRadius = searchConfigDiv.getAttribute("data-border-radius") || "6px";
+    const otherFieldsColor = searchConfigDiv.getAttribute("data-other-fields-color") || "#333";
+    const otherFieldsFontSize = searchConfigDiv.getAttribute("data-other-fields-font-size") || "14px";
+
+    const styles = {
+        titleFontSize,
+        titleFontFamily,
+        titleColor,
+        borderRadius,
+        otherFieldsColor,
+        otherFieldsFontSize,
+    };
 
     const maxItems = displayMode === "Grid" ? gridRows * gridColumns : itemsPerPage;
 
     const collectionsParam = encodeURIComponent(JSON.stringify(selectedCollections));
     const fieldsSearchParam = encodeURIComponent(JSON.stringify(selectedFieldsSearch));
-const fieldsDisplayParam = encodeURIComponent(JSON.stringify(selectedFieldsDisplay));
+    const fieldsDisplayParam = encodeURIComponent(JSON.stringify(selectedFieldsDisplay));
 
     const form = document.querySelector(".w-form, #search-form");
     const input = document.querySelector("input[name='query']");
     const resultsContainer = document.querySelector(".searchresults");
     const base_url = "https://search-server.long-rain-28bb.workers.dev";
-    const siteName = window.location.hostname.replace(/^www\./, '').split('.')[0];
+    const siteName = window.location.hostname.replace(/^www\./, "").split(".")[0];
 
-    // ✅ Hide submit button if Auto result
-const submitButton = form?.querySelector("input[type='submit']");
-if (resultType === "Auto result" && submitButton) {
-    submitButton.style.display = "none";
-}
+    // Hide submit button if Auto result
+    const submitButton = form?.querySelector("input[type='submit']");
+    if (resultType === "Auto result" && submitButton) {
+        submitButton.style.display = "none";
+    }
 
     if (!form || !input || !resultsContainer) {
         console.warn("Search form or elements not found.");
@@ -222,33 +273,29 @@ if (resultType === "Auto result" && submitButton) {
     const token = await getVisitorSessionToken();
     console.log("Generated Token: ", token);
 
-     // === Implement Search Bar Display Mode ===
-  if (searchBarType === "Icon") {
-  // Hide form initially, show icon container (assumed to already exist)
-  form.style.display = "none";
+    // Implement Search Bar Display Mode
+    if (searchBarType === "Icon") {
+        form.style.display = "none";
 
-  const iconContainer = document.querySelector(".searchiconcontainer");
-  if (!iconContainer) {
-    console.error("❌ '.searchiconcontainer' element not found.");
-    return;
-  }
+        const iconContainer = document.querySelector(".searchiconcontainer");
+        if (!iconContainer) {
+            console.error("❌ '.searchiconcontainer' element not found.");
+            return;
+        }
 
-  iconContainer.style.cursor = "pointer";
-  iconContainer.style.display = ""; // Make sure icon is visible
+        iconContainer.style.cursor = "pointer";
+        iconContainer.style.display = "";
 
-  // On click show the form and hide the icon container
-  iconContainer.addEventListener("click", () => {
-    form.style.display = "";
-    iconContainer.style.display = "none";
-    input.focus();
-  });
-} else {
-  // Expand mode: show form and hide icon container if exists
-  form.style.display = "";
-  const iconContainer = document.querySelector(".searchiconcontainer");
-  if (iconContainer) iconContainer.style.display = "none";
-}
-
+        iconContainer.addEventListener("click", () => {
+            form.style.display = "";
+            iconContainer.style.display = "none";
+            input.focus();
+        });
+    } else {
+        form.style.display = "";
+        const iconContainer = document.querySelector(".searchiconcontainer");
+        if (iconContainer) iconContainer.style.display = "none";
+    }
 
     async function performSearch() {
         const query = input.value.trim().toLowerCase();
@@ -260,119 +307,82 @@ if (resultType === "Auto result" && submitButton) {
             const headers = { Authorization: `Bearer ${token}` };
 
             const [pageRes, cmsRes] = await Promise.all([
-                fetch(`${base_url}/api/search-index?query=${encodeURIComponent(query)}&siteName=${siteName}`, { headers }),
-                fetch(`${base_url}/api/search-cms?query=${encodeURIComponent(query)}&siteName=${siteName}&collections=${collectionsParam}&searchFields=${fieldsSearchParam}&displayFields=${fieldsDisplayParam}`,{ headers }),
-
+                fetch(
+                    `${base_url}/api/search-index?query=${encodeURIComponent(
+                        query
+                    )}&siteName=${siteName}`,
+                    { headers }
+                ),
+                fetch(
+                    `${base_url}/api/search-cms?query=${encodeURIComponent(
+                        query
+                    )}&siteName=${siteName}&collections=${collectionsParam}&searchFields=${fieldsSearchParam}&displayFields=${fieldsDisplayParam}`,
+                    { headers }
+                ),
             ]);
+
+            if (!pageRes.ok || !cmsRes.ok) {
+                throw new Error("Search API error");
+            }
 
             const [pageData, cmsData] = await Promise.all([
-                pageRes.ok ? pageRes.json() : { results: [] },
-                cmsRes.ok ? cmsRes.json() : { results: [] },
+                pageRes.json(),
+                cmsRes.json(),
             ]);
 
-            const pageResults = Array.isArray(pageData.results) ? pageData.results : [];
-            const cmsResults = Array.isArray(cmsData.results) ? cmsData.results : [];
-
-            if (pageResults.length === 0 && cmsResults.length === 0) {
-                resultsContainer.innerHTML = "<p>No results found.</p>";
-                return;
+            // Filter page results by selected collections if specified
+            let filteredPageResults = pageData.results || [];
+            if (selectedCollections.length > 0) {
+                filteredPageResults = filteredPageResults.filter((item) =>
+                    selectedCollections.includes(item.collectionName)
+                );
             }
 
             resultsContainer.innerHTML = "";
-            
-            if (shouldOpenInNewPage) {
-    const container1 = document.createElement('div');
-    const container2 = document.createElement('div');
-
-    let resultsHTML = "";
-
-    if ((selectedOption === "Pages" || selectedOption === "Both") && pageResults.length > 0) {
-        renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container1, 1, true); // isPageResult = true
-  resultsHTML += container1.innerHTML;
-        
-    }
-
-    if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults.length > 0) {
-        renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container2, 1, false); // isPageResult = false
-  resultsHTML += container2.innerHTML;
-    }
-
-    const newTab = window.open();
-    newTab.document.write(`
-        <html>
-        <head>
-            <title>Search Results</title>
-            <style>
-                body {
-                    font-family: sans-serif;
-                    padding: 2rem;
-                }
-                .search-results-wrapper {
-                    display: ${displayMode === 'Grid' ? 'grid' : 'block'};
-                    grid-template-columns: repeat(${gridColumns}, 1fr);
-                    gap: 1rem;
-                }
-                .search-result-item {
-                    padding: 1rem;
-                    border: 1px solid #ddd;
-                    border-radius: 6px;
-                    background: #fff;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-                }
-                h3 {
-                    margin-top: 2rem;
-                }
-            </style>
-        </head>
-        <body>
-            <h2>Search Results</h2>
-            ${resultsHTML}
-        </body>
-        </html>
-    `);
-    newTab.document.close();
-} else {
-    resultsContainer.innerHTML = "";
-
-    if ((selectedOption === "Pages" || selectedOption === "Both") && pageResults.length > 0) {
-        const container = document.createElement('div');
-        resultsContainer.appendChild(container);
-       
-        renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container, 1, true);
-
-
-    }
-
-    if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults.length > 0) {
-        const container = document.createElement('div');
-        resultsContainer.appendChild(container);
-       
-renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container, 1, false);
-
-    }
-}
-
+            if (filteredPageResults.length) {
+                renderResults(
+                    filteredPageResults,
+                    "Page Results",
+                    displayMode,
+                    maxItems,
+                    gridColumns,
+                    paginationType,
+                    resultsContainer,
+                    1,
+                    true,
+                    styles
+                );
+            }
+            if (cmsData.results?.length) {
+                renderResults(
+                    cmsData.results,
+                    "CMS Results",
+                    displayMode,
+                    maxItems,
+                    gridColumns,
+                    paginationType,
+                    resultsContainer,
+                    1,
+                    false,
+                    styles
+                );
+            }
 
         } catch (error) {
-            console.warn("API search failed, falling back to page search.");
-            resultsContainer.innerHTML = "<p>No results found.</p>";
+            console.error(error);
+            resultsContainer.innerHTML = "<p>Error fetching search results.</p>";
         }
     }
 
-    if (resultType === "Auto result") {
-        input.addEventListener("input", debounce(performSearch, 500));
-    } else {
-        form.addEventListener("submit", function (e) {
+    if (resultType === "Click on search") {
+        form.addEventListener("submit", (e) => {
             e.preventDefault();
+            performSearch();
+        });
+    } else if (resultType === "Auto result") {
+        input.addEventListener("input", () => {
             performSearch();
         });
     }
 
-    function debounce(fn, delay) {
-        let timer;
-        return function (...args) {
-            clearTimeout(timer);
-            timer = setTimeout(() => fn.apply(this, args), delay);
-        };
-    }
 });
