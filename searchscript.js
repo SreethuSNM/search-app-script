@@ -57,7 +57,7 @@ async function getVisitorSessionToken() {
 
 // Render search results with pagination
 //function renderResults(results, title, displayMode, maxItems, gridColumns = 3, paginationType = "None", container, currentPage = 1, isPageResult = true) {
-function renderResults(results, title, displayMode, maxItems, gridColumns = 3, paginationType = "None", container, currentPage = 1, isPageResult = true, styleOptions = {}) {
+function renderResults(results, title, displayMode, maxItems, gridColumns = 3, paginationType = "None", container, currentPage = 1, isPageResult = true, styles = {}) {
 
 
     if (!Array.isArray(results) || results.length === 0) return "";
@@ -112,9 +112,7 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
     
 const titleHtml = isPageResult
   ? `<h4><a href="${url}" target="_blank">${titleText}</a></h4>`
-  : `<h4 style="font-size: ${cmsTitleFontSize}; font-family: ${cmsTitleFontFamily}; color: ${cmsTitleColor}; margin-bottom: 0.5rem;">
-        ${titleText}
-     </h4>`;
+  : `<h4 style="font-size: ${titleFontSize}; font-family: ${titleFontFamily}; color: ${titleColor}; margin-bottom: 0.5rem;">${titleText}</h4>`;
 
 
 
@@ -208,9 +206,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     const resultPage = searchConfigDiv.getAttribute('data-result-page') || "Same page";
     const shouldOpenInNewPage = resultPage === "New Page";
 
-    const cmsTitleFontSize = searchConfigDiv.getAttribute("data-cms-title-font-size") || "16px";
-const cmsTitleFontFamily = searchConfigDiv.getAttribute("data-cms-title-font-family") || "Arial";
-const cmsTitleColor = searchConfigDiv.getAttribute("data-cms-title-color") || "#000";
+    const titleFontSize = searchConfigDiv.getAttribute("data-title-font-size") || "16px";
+const titleFontFamily = searchConfigDiv.getAttribute("data-title-font-family") || "Arial";
+const titleColor = searchConfigDiv.getAttribute("data-title-color") || "#000";
 const otherFieldsColor = searchConfigDiv.getAttribute("data-other-fields-color") || "#333";
 const otherFieldsFontSize = searchConfigDiv.getAttribute("data-other-fields-font-size") || "14px";
 const borderRadius = searchConfigDiv.getAttribute("data-border-radius") || "6px";
@@ -222,6 +220,16 @@ const borderRadius = searchConfigDiv.getAttribute("data-border-radius") || "6px"
     const collectionsParam = encodeURIComponent(JSON.stringify(selectedCollections));
     const fieldsSearchParam = encodeURIComponent(JSON.stringify(selectedFieldsSearch));
 const fieldsDisplayParam = encodeURIComponent(JSON.stringify(selectedFieldsDisplay));
+
+
+     const styles = {
+      titleFontSize,
+      titleFontFamily,
+      titleColor,
+      otherFieldsColor,
+      otherFieldsFontSize,
+      borderRadius,
+    };
 
     const form = document.querySelector(".w-form, #search-form");
     const input = document.querySelector("input[name='query']");
@@ -362,7 +370,7 @@ if (resultType === "Auto result" && submitButton) {
         const container = document.createElement('div');
         resultsContainer.appendChild(container);
        
-        renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container, 1, true);
+        renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container, 1, true,styles);
 
 
     }
@@ -371,7 +379,7 @@ if (resultType === "Auto result" && submitButton) {
         const container = document.createElement('div');
         resultsContainer.appendChild(container);
        
-renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container, 1, false);
+renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container, 1, false,styles);
 
     }
 }
