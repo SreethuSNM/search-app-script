@@ -114,8 +114,13 @@ function renderResults(
                 .join("");
 
             const titleHtml = isPageResult
-                ? `<h4 style="font-size: ${titleFontSize}; font-family: ${titleFontFamily}; color: ${titleColor}; margin-bottom: 0.5rem;"><a href="${url}" target="_blank" style="color: inherit; text-decoration: none;">${titleText}</a></h4>`
-                : ""; // No title for CMS results
+    ? `<h4 style="font-size: ${titleFontSize}; font-family: ${titleFontFamily}; color: ${titleColor}; margin-bottom: 0.5rem;">
+          <a href="${url}" target="_blank" style="color: inherit; text-decoration: none;">${titleText}</a>
+      </h4>`
+    : `<h4 style="font-size: ${cmsTitleFontSize}; font-family: ${cmsTitleFontFamily}; color: ${cmsTitleColor}; margin-bottom: 0.5rem;">
+          ${titleText}
+      </h4>`;
+
 
             return `
       <div class="search-result-item" style="
@@ -126,7 +131,6 @@ function renderResults(
         margin-bottom: 1rem;
         box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       ">
-        ${titleHtml}
         ${matchedText ? `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${matchedText}...</p>` : fieldsHtml}
       </div>
     `;
