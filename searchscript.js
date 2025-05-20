@@ -117,21 +117,19 @@ function renderResults(
                 ? `<h4 style="font-size: ${titleFontSize}; font-family: ${titleFontFamily}; color: ${titleColor}; margin-bottom: 0.5rem;"><a href="${url}" target="_blank" style="color: inherit; text-decoration: none;">${titleText}</a></h4>`
                 : ""; // No title for CMS results
 
-            return 
-                `<div class="search-result-item" style="
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: ${borderRadius};
-    padding: 1rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  ">
-    $<h4 style="font-size: ${titleFontSize}; font-family: ${titleFontFamily}; color: ${titleColor}; margin-bottom: 0.5rem;">{titleHtml}</h4>
-            : ""; // No title for CMS results
-
-    ${matchedText ? `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${matchedText}...</p>` : fieldsHtml}
-</div>`
-;
+            return `
+      <div class="search-result-item" style="
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: ${borderRadius};
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      ">
+        ${titleHtml}
+        ${matchedText ? `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${matchedText}...</p>` : fieldsHtml}
+      </div>
+    `;
         })
         .join("");
 
