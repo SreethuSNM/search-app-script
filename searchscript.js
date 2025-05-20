@@ -126,7 +126,9 @@ function renderResults(
         margin-bottom: 1rem;
         box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       ">
-        ${titleHtml}
+        $<h4 style="font-size: ${titleFontSize}; font-family: ${titleFontFamily}; color: ${titleColor}; margin-bottom: 0.5rem;">{titleHtml}</h4>
+                : ""; // No title for CMS results
+
         ${matchedText ? `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${matchedText}...</p>` : fieldsHtml}
       </div>
     `;
