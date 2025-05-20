@@ -131,7 +131,6 @@ const titleHtml = isPageResult
     ${titleHtml}
     ${matchedText ? `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${matchedText}...</p>` : fieldsHtml}
       </div>
-  </div>
 `; }).join("");
 
     let paginationHtml = "";
