@@ -287,7 +287,7 @@ if (resultType === "Auto result" && submitButton) {
         const query = input.value.trim().toLowerCase();
         if (!query) return;
 
-        resultsContainer.innerHTML = "<p>Searching...</p>";
+        
 
         try {
             const headers = { Authorization: `Bearer ${token}` };
