@@ -392,14 +392,31 @@ renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, pag
         }
     }
 
-    if (resultType === "Auto result") {
-        input.addEventListener("input", debounce(performSearch, 500));
+    // if (resultType === "Auto result") {
+    //     input.addEventListener("input", debounce(performSearch, 500));
+    // } else {
+    //     form.addEventListener("submit", function (e) {
+    //         e.preventDefault();
+    //         performSearch();
+    //     });
+    // }
+
+        if (resultType === "Auto result") {
+        let debounceTimeout;
+        input.addEventListener("input", () => {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+                performSearch();
+            }, 300); // 300ms debounce
+        });
     } else {
-        form.addEventListener("submit", function (e) {
+        form.addEventListener("submit", (e) => {
             e.preventDefault();
             performSearch();
         });
     }
+});
+
 
     function debounce(fn, delay) {
         let timer;
