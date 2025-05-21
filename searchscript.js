@@ -415,7 +415,7 @@ renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, pag
             performSearch();
         });
     }
-});
+
 
 
     function debounce(fn, delay) {
@@ -424,5 +424,5 @@ renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, pag
             clearTimeout(timer);
             timer = setTimeout(() => fn.apply(this, args), delay);
         };
-    }
+}
 });
