@@ -401,20 +401,99 @@ renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, pag
     //     });
     // }
 
-        if (resultType === "Auto result") {
-        let debounceTimeout;
-        input.addEventListener("input", () => {
-            clearTimeout(debounceTimeout);
-            debounceTimeout = setTimeout(() => {
-                performSearch();
-            }, 300); // 300ms debounce
-        });
-    } else {
-        form.addEventListener("submit", (e) => {
-            e.preventDefault();
-            performSearch();
-        });
+
+    const suggestionBox = document.querySelector(".searchsuggestionbox");
+
+async function fetchSuggestions(query) {
+    if (!query) {
+        suggestionBox.innerHTML = "";
+        suggestionBox.style.display = "none";
+        return;
     }
+
+    try {
+        const headers = { Authorization: `Bearer ${token}` };
+        // We'll just call your existing search endpoint but limit results to top 5 for suggestions
+        const res = await fetch(`${base_url}/api/search-index?query=${encodeURIComponent(query)}&siteName=${siteName}`, { headers });
+        if (!res.ok) throw new Error('Failed to fetch suggestions');
+        const data = await res.json();
+        const suggestions = data.results.slice(0, 5); // top 5 suggestions
+
+        if (suggestions.length === 0) {
+            suggestionBox.innerHTML = "";
+            suggestionBox.style.display = "none";
+            return;
+        }
+
+        // Build suggestion list HTML
+        suggestionBox.innerHTML = suggestions.map(item => {
+            const title = item.name || item.title || "Untitled";
+            return `<div class="suggestion-item" style="padding: 0.4rem 0.6rem; cursor: pointer; border-bottom: 1px solid #eee;">${title}</div>`;
+        }).join("");
+        suggestionBox.style.display = "block";
+
+        // Add click handlers on each suggestion
+        suggestionBox.querySelectorAll(".suggestion-item").forEach((el, idx) => {
+            el.addEventListener("click", () => {
+                input.value = suggestions[idx].name || suggestions[idx].title || "";
+                suggestionBox.innerHTML = "";
+                suggestionBox.style.display = "none";
+                performSearch();
+            });
+        });
+    } catch (error) {
+        console.warn("Suggestion fetch error:", error);
+        suggestionBox.innerHTML = "";
+        suggestionBox.style.display = "none";
+    }
+}
+
+
+    // Show suggestions as user types, with debounce
+if (resultType === "Auto result") {
+    let debounceTimeout;
+    input.addEventListener("input", () => {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => {
+            const query = input.value.trim().toLowerCase();
+            fetchSuggestions(query);
+            performSearch();
+        }, 300);
+    });
+} else {
+    input.addEventListener("input", () => {
+        const query = input.value.trim().toLowerCase();
+        fetchSuggestions(query);
+    });
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        suggestionBox.innerHTML = "";
+        suggestionBox.style.display = "none";
+        performSearch();
+    });
+}
+    //     if (resultType === "Auto result") {
+    //     let debounceTimeout;
+    //     input.addEventListener("input", () => {
+    //         clearTimeout(debounceTimeout);
+    //         debounceTimeout = setTimeout(() => {
+    //             performSearch();
+    //         }, 300); // 300ms debounce
+    //     });
+    // } else {
+    //     form.addEventListener("submit", (e) => {
+    //         e.preventDefault();
+    //         performSearch();
+    //     });
+    // }
+
+    // Hide suggestions when input loses focus (optional)
+input.addEventListener("blur", () => {
+    setTimeout(() => { // delay so click event on suggestion works
+        suggestionBox.innerHTML = "";
+        suggestionBox.style.display = "none";
+    }, 200);
+});
 
 
 
