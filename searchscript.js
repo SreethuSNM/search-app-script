@@ -112,26 +112,38 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
                 .join("");
 
     
-const titleHtml = isPageResult
-  ? `<h4><a href="${url}" target="_blank">${titleText}</a></h4>`
-  : `<h4 style="font-size: ${titleFontSize}; font-family: ${titleFontFamily}; color: ${titleColor}; margin-bottom: 0.5rem;">${titleText}</h4>`;
+const titleHtml = `
+        <h4 style="font-size: ${titleFontSize}; font-family: ${titleFontFamily}; color: ${titleColor}; margin-bottom: 0.5rem;">
+            ${titleText}
+        </h4>
+    `;
 
 
 
+const detailUrl = isPageResult
+  ? (item.publishedPath || item.slug || "#")
+  : (item.detailUrl || "#");
 
-      return `
+const cardContent = `
   <div class="search-result-item" style="
-        background: #fff;
-        border: 1px solid #ddd;
-        border-radius: ${borderRadius};
-        padding: 1rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      ">
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: ${borderRadius};
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  ">
     ${titleHtml}
     ${matchedText ? `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${matchedText}...</p>` : fieldsHtml}
-      </div>
-`; }).join("");
+  </div>
+`;
+
+return `
+  <a href="${detailUrl}" target="_blank" style="text-decoration: none; color: inherit;">
+    ${cardContent}
+  </a>
+`;
+ }).join("");
 
     let paginationHtml = "";
     if (paginationType === "Numbered" && totalPages > 1) {
