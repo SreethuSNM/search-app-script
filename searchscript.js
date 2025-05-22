@@ -287,16 +287,19 @@ if (resultType === "Auto result" && submitButton) {
     // Inject styles dynamically for suggestions
     const style = document.createElement("style");
     style.textContent = `
-      .searchsuggestionbox {
-        position: absolute;
-        background: white;
-        border: 1px solid #ccc;
-        max-height: 200px;
-        overflow-y: auto;
-        width: 300px;
-        display: none;
-        z-index: 1000;
-      }
+     .searchsuggestionbox {
+  position: absolute;
+  top: 100%;           /* Places it directly below the input */
+  left: 0;
+  background: white;
+  border: 1px solid #ccc;
+  max-height: 200px;
+  overflow-y: auto;
+  width: 100%;
+  display: none;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
       .suggestion-item {
         padding: 8px;
         cursor: pointer;
@@ -313,6 +316,7 @@ if (resultType === "Auto result" && submitButton) {
         suggestionBox = document.createElement("div");
         suggestionBox.className = "searchsuggestionbox";
         // Append right after the input or somewhere appropriate in DOM
+         input.parentNode.style.position = "relative";
         input.parentNode.appendChild(suggestionBox);
     }
 
@@ -340,6 +344,16 @@ if (resultType === "Auto result" && submitButton) {
                 suggestionBox.innerHTML = data.suggestions
                     .map(s => `<div class="suggestion-item">${s}</div>`)
                     .join("");
+
+                // Attach click listeners to suggestions
+suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
+  item.addEventListener('click', () => {
+    input.value = item.textContent;
+    suggestionBox.style.display = "none";
+    performSearch(); // Trigger the search
+  });
+});
+
             } else {
                 suggestionBox.style.display = "none";
                 suggestionBox.innerHTML = "";
@@ -484,6 +498,11 @@ renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, pag
             performSearch();
         });
     }
+document.addEventListener('click', (event) => {
+  if (!suggestionBox.contains(event.target) && event.target !== input) {
+    suggestionBox.style.display = "none";
+  }
+});
 
 
 
