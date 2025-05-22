@@ -414,7 +414,7 @@ async function fetchSuggestions(query) {
     try {
         const headers = { Authorization: `Bearer ${token}` };
         // We'll just call your existing search endpoint but limit results to top 5 for suggestions
-        const res = await fetch(`${base_url}/api/search-index?query=${encodeURIComponent(query)}&siteName=${siteName}`, { headers });
+        const res = await fetch(`${base_url}/api/suggestions?query=${encodeURIComponent(query)}&siteName=${siteName}`, { headers });
         if (!res.ok) throw new Error('Failed to fetch suggestions');
         const data = await res.json();
         const suggestions = data.results.slice(0, 5); // top 5 suggestions
