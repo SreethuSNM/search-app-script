@@ -68,6 +68,7 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
         borderRadius = "6px",
         otherFieldsColor = "#333",
         otherFieldsFontSize = "14px",
+          boxShadow = true,
     } = styles;
 
    const itemsHtml = pagedResults.map(item => {
@@ -115,14 +116,17 @@ const detailUrl = isPageResult
   ? (item.publishedPath || item.slug || "#")
   : (item.detailUrl || "#");
 
+       const boxShadowStyle = boxShadow ? "0 2px 6px rgba(255, 0, 0, 0.4)" : "none";
+
 const cardContent = `
-  <div class="search-result-item" style="
+  <div class="search-result-item" 
+  style="
     background: #fff;
     border: 1px solid #ddd;
     border-radius: ${borderRadius};
     padding: 1rem;
     margin-bottom: 1rem;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    box-shadow: ${boxShadowStyle};
   ">
     ${titleHtml}
     ${matchedText ? `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${matchedText}...</p>` : fieldsHtml}
@@ -216,6 +220,8 @@ const titleColor = searchConfigDiv.getAttribute("data-title-color") || "#000";
 const otherFieldsColor = searchConfigDiv.getAttribute("data-other-fields-color") || "#333";
 const otherFieldsFontSize = searchConfigDiv.getAttribute("data-other-fields-font-size") || "14px";
 const borderRadius = searchConfigDiv.getAttribute("data-border-radius") || "6px";
+    const boxShadowAttr = searchConfigDiv.getAttribute("data-box-shadow");
+const boxShadow = boxShadowAttr === "true";
 
 
 
