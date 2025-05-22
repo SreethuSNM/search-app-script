@@ -338,12 +338,26 @@ if (resultType === "Auto result" && submitButton) {
             if (!response.ok) throw new Error("Network response was not ok");
 
             const data = await response.json();
+            const data = await response.json();
+    const { pageSuggestions = [], collectionSuggestions = [] } = data;
 
-            if (data.suggestions && data.suggestions.length > 0) {
-                suggestionBox.style.display = "block";
-                suggestionBox.innerHTML = data.suggestions
-                    .map(s => `<div class="suggestion-item">${s}</div>`)
-                    .join("");
+    // Build the suggestions list based on selectedOption
+    let suggestions = [];
+
+
+             if ((selectedOption === "Pages" || selectedOption === "Both") && pageSuggestions.length > 0) {
+      suggestions.push(...pageSuggestions.map(s => `<div class="suggestion-item page-suggestion">${s}</div>`));
+    }
+
+    if ((selectedOption === "Collection" || selectedOption === "Both") && collectionSuggestions.length > 0) {
+      suggestions.push(...collectionSuggestions.map(s => `<div class="suggestion-item collection-suggestion">${s}</div>`));
+    }
+
+
+
+            if (suggestions.length > 0) {
+      suggestionBox.style.display = "block";
+      suggestionBox.innerHTML = suggestions.join("");
 
                 // Attach click listeners to suggestions
 suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
