@@ -56,8 +56,8 @@ async function getVisitorSessionToken() {
 }
 
 // Render search results with pagination
-
-function renderResults(results, cmsDetailUrls, title, displayMode, maxItems, gridColumns = 3, paginationType = "None", container, currentPage = 1, isPageResult = true, styles = {}) {
+//function renderResults(results, title, displayMode, maxItems, gridColumns = 3, paginationType = "None", container, currentPage = 1, isPageResult = true) {
+function renderResults(results, title, displayMode, maxItems, gridColumns = 3, paginationType = "None", container, currentPage = 1, isPageResult = true, styles = {}) {
 
 
     if (!Array.isArray(results) || results.length === 0) return "";
@@ -76,9 +76,9 @@ function renderResults(results, cmsDetailUrls, title, displayMode, maxItems, gri
         otherFieldsFontSize = "14px",
     } = styles;
 
-   const itemsHtml = pagedResults.map((item, index) => {
+   const itemsHtml = pagedResults.map(item => {
     const titleText = item.name || item.title || "Untitled";
-    // const url = item.publishedPath || item.slug || "#";
+    const url = item.publishedPath || item.slug || "#";
     const matchedText = item.matchedText?.slice(0, 200) || "";
 
         const fieldsHtml = Object.entries(item)
@@ -91,6 +91,10 @@ function renderResults(results, cmsDetailUrls, title, displayMode, maxItems, gri
             if (typeof value === 'object' && value !== null) {
                 const imageUrl = (Array.isArray(value) && value[0]?.url)
                     || value.url || value.src || value.href;
+
+                // if (imageUrl) {
+                //     return `<p><strong>${key}:</strong><br><img src="${imageUrl}" alt="${key}" class="item-image" style="max-width: 100%; border-radius: 4px;" /></p>`;
+                // }
 
     if (imageUrl) {    
     const imageStyle = displayMode === 'Grid'
@@ -108,60 +112,26 @@ function renderResults(results, cmsDetailUrls, title, displayMode, maxItems, gri
                 .join("");
 
     
-// const titleHtml = isPageResult
-//   ? `<h4><a href="${url}" target="_blank">${titleText}</a></h4>`
-//   : `<h4 style="font-size: ${titleFontSize}; font-family: ${titleFontFamily}; color: ${titleColor}; margin-bottom: 0.5rem;">${titleText}</h4>`;
+const titleHtml = isPageResult
+  ? `<h4><a href="${url}" target="_blank">${titleText}</a></h4>`
+  : `<h4 style="font-size: ${titleFontSize}; font-family: ${titleFontFamily}; color: ${titleColor}; margin-bottom: 0.5rem;">${titleText}</h4>`;
 
 
 
 
-//       return `
-//   <div class="search-result-item" style="
-//         background: #fff;
-//         border: 1px solid #ddd;
-//         border-radius: ${borderRadius};
-//         padding: 1rem;
-//         margin-bottom: 1rem;
-//         box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-//       ">
-//     ${titleHtml}
-//     ${matchedText ? `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${matchedText}...</p>` : fieldsHtml}
-//       </div>
-// `; }).join("");
-
-       // const href = item.detailUrl || item.publishedPath || "#";
-
-    const url = isPageResult
-            ? (item.publishedPath || item.slug || "#")
-            : (cmsDetailUrls && cmsDetailUrls[startIndex + index]) || "#";
-
-return `
- 
-     <div class="search-result-item" data-url="${url}" style="
-                background: #fff;
-                border: 1px solid #ddd;
-                border-radius: ${borderRadius};
-                padding: 1rem;
-                margin-bottom: 1rem;
-                box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-                transition: box-shadow 0.2s;
-            ">
-                <h4 style="
-                    font-size: ${titleFontSize};
-                    font-family: ${titleFontFamily};
-                    color: ${titleColor};
-                    margin-bottom: 0.5rem;
-                ">${titleText}</h4>
-
-                ${matchedText
-                    ? `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${matchedText}...</p>`
-                    : fieldsHtml}
-            </div>
-
+      return `
+  <div class="search-result-item" style="
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: ${borderRadius};
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      ">
+    ${titleHtml}
+    ${matchedText ? `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${matchedText}...</p>` : fieldsHtml}
+      </div>
 `; }).join("");
-
-    
-
 
     let paginationHtml = "";
     if (paginationType === "Numbered" && totalPages > 1) {
@@ -192,22 +162,11 @@ return `
 
     if (container) {
         container.innerHTML = sectionHtml;
-
-         container.querySelectorAll('.search-result-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const url = item.getAttribute('data-url');
-                if (url && url !== "#") {
-                    window.open(url, '_blank');
-                }
-            });
-        });
-
-        
         if (paginationType === "Numbered") {
             container.querySelectorAll('.pagination-button').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const page = parseInt(btn.getAttribute('data-page'));
-                    renderResults(results, cmsDetailUrls, title, displayMode, maxItems, gridColumns, paginationType, container, page,isPageResult,styles);
+                    renderResults(results, title, displayMode, maxItems, gridColumns, paginationType, container, page,isPageResult,styles);
                 });
             });
         }
@@ -216,7 +175,7 @@ return `
             const loadBtn = container.querySelector('.load-more-button');
             if (loadBtn) {
                 loadBtn.addEventListener('click', () => {
-                    renderResults(results,cmsDetailUrls, title, displayMode, endIndex + maxItems, gridColumns, paginationType, container, 1,isPageResult,
+                    renderResults(results, title, displayMode, endIndex + maxItems, gridColumns, paginationType, container, 1,isPageResult,
                         styles);
                 });
             }
@@ -429,18 +388,11 @@ suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
 
             const pageResults = Array.isArray(pageData.results) ? pageData.results : [];
             const cmsResults = Array.isArray(cmsData.results) ? cmsData.results : [];
-            const cmsDetailUrls = Array.isArray(cmsData.detailUrls) ? cmsData.detailUrls : [];
 
             if (pageResults.length === 0 && cmsResults.length === 0) {
                 resultsContainer.innerHTML = "<p>No results found.</p>";
                 return;
             }
-
-
-            cmsResults.forEach((item, index) => {
-  const url = cmsDetailUrls[index] || "#";
-  // use `url` to build your anchor href or whatever you want
-});
 
             resultsContainer.innerHTML = "";
             
@@ -451,15 +403,13 @@ suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
     let resultsHTML = "";
 
     if ((selectedOption === "Pages" || selectedOption === "Both") && pageResults.length > 0) {
-       renderResults(pageResults, cmsDetailUrls, "Page Results", displayMode, maxItems, gridColumns, paginationType, container1, 1, true, styles);
-
+        renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container1, 1, true,styles); // isPageResult = true
   resultsHTML += container1.innerHTML;
         
     }
 
     if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults.length > 0) {
-       renderResults(cmsResults, cmsDetailUrls, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container2, 1, false, styles);
-
+        renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container2, 1, false,styles); // isPageResult = false
   resultsHTML += container2.innerHTML;
     }
 
@@ -504,28 +454,18 @@ suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
         const container = document.createElement('div');
         resultsContainer.appendChild(container);
        
-        renderResults(pageResults, cmsDetailUrls,"Page Results", displayMode, maxItems, gridColumns, paginationType, container, 1, true,styles);
+        renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container, 1, true,styles);
 
 
     }
 
-   if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults.length > 0) {
-    renderResults(
-      cmsResults,
-      cmsDetailUrls,
-      "CMS Results",
-      displayMode,
-      maxItems,
-      gridColumns,
-      paginationType,
-      container2,
-      1,
-      false,
-      styles
-    );
-    resultsHTML += container2.innerHTML;
-}
+    if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults.length > 0) {
+        const container = document.createElement('div');
+        resultsContainer.appendChild(container);
+       
+renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container, 1, false,styles);
 
+    }
 }
 
 
