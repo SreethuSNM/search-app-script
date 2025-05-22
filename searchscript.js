@@ -82,7 +82,8 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
     const matchedText = item.matchedText?.slice(0, 200) || "";
 
         const fieldsHtml = Object.entries(item)
-  .filter(([key]) => key !== "name" && key !== "title")  // exclude name and title here
+ .filter(([key]) => key !== "name" && key !== "title" && key !== "detailUrl")
+
   .map(([key, value]) => {
             if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
                 value = new Date(value).toLocaleString();
