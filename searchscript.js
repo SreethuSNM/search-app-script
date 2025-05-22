@@ -235,7 +235,6 @@ const fieldsDisplayParam = encodeURIComponent(JSON.stringify(selectedFieldsDispl
     const form = document.querySelector(".w-form, #search-form");
     const input = document.querySelector("input[name='query']");
     const resultsContainer = document.querySelector(".searchresults");
-    const suggestionBox = document.querySelector(".searchsuggestionbox");
     const base_url = "https://search-server.long-rain-28bb.workers.dev";
     const siteName = window.location.hostname.replace(/^www\./, '').split('.')[0];
 
@@ -284,49 +283,78 @@ if (resultType === "Auto result" && submitButton) {
 }
 
 
-    // 🔍 Extract values from specified fields for autocomplete
-function extractSuggestions(results, fields) {
-  const suggestions = [];
 
-  for (const item of results) {
-    for (const field of fields) {
-      const value = item[field];
-      if (typeof value === "string") suggestions.push(value);
+    // Inject styles dynamically for suggestions
+    const style = document.createElement("style");
+    style.textContent = `
+      .searchsuggestionbox {
+        position: absolute;
+        background: white;
+        border: 1px solid #ccc;
+        max-height: 200px;
+        overflow-y: auto;
+        width: 300px;
+        display: none;
+        z-index: 1000;
+      }
+      .suggestion-item {
+        padding: 8px;
+        cursor: pointer;
+      }
+      .suggestion-item:hover {
+        background-color: #eee;
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Create suggestion box if it doesn't exist
+    let suggestionBox = document.querySelector(".searchsuggestionbox");
+    if (!suggestionBox) {
+        suggestionBox = document.createElement("div");
+        suggestionBox.className = "searchsuggestionbox";
+        // Append right after the input or somewhere appropriate in DOM
+        input.parentNode.appendChild(suggestionBox);
     }
-  }
 
-  return suggestions;
-}
+    // Add input event listener for suggestion box
+    input.addEventListener("input", async () => {
+        const query = input.value.trim();
 
-// 💡 Render suggestions in .searchsuggestionbox
-function renderSuggestions(suggestions) {
-  suggestionBox.innerHTML = "";
-  suggestionBox.style.display = suggestions.length > 0 ? "block" : "none";
+        if (!query) {
+            suggestionBox.style.display = "none";
+            suggestionBox.innerHTML = "";
+            return;
+        }
 
-  if (suggestions.length === 0) return;
+        try {
+            const url = `https://search-server.long-rain-28bb.workers.dev/api/suggestions?query=${encodeURIComponent(query)}&siteName=${encodeURIComponent(siteName)}&collections=${collectionsParam}&searchFields=${fieldsSearchParam}`;
 
-  for (const suggestion of suggestions.slice(0, 5)) {
-    const div = document.createElement("div");
-    div.textContent = suggestion;
-    div.className = "suggestion-item";
-    div.onclick = () => {
-      input.value = suggestion;
-      suggestionBox.style.display = "none";
-      performSearch(); // Trigger search immediately
-    };
-    suggestionBox.appendChild(div);
-  }
-}
+            const response = await fetch(url);
+
+            if (!response.ok) throw new Error("Network response was not ok");
+
+            const data = await response.json();
+
+            if (data.suggestions && data.suggestions.length > 0) {
+                suggestionBox.style.display = "block";
+                suggestionBox.innerHTML = data.suggestions
+                    .map(s => `<div class="suggestion-item">${s}</div>`)
+                    .join("");
+            } else {
+                suggestionBox.style.display = "none";
+                suggestionBox.innerHTML = "";
+            }
+        } catch (err) {
+            console.error("Failed to fetch suggestions:", err);
+            suggestionBox.style.display = "none";
+            suggestionBox.innerHTML = "";
+        }
+    });
 
 
     async function performSearch() {
         const query = input.value.trim().toLowerCase();
-        // if (!query) return;
-        if (!query) {
-    renderSuggestions([]);
-    resultsContainer.innerHTML = "";
-    return;
-  }
+        if (!query) return;
 
         
 
@@ -351,18 +379,6 @@ function renderSuggestions(suggestions) {
                 resultsContainer.innerHTML = "<p>No results found.</p>";
                 return;
             }
-
-            // 🔎 Suggest from all fields
-    const searchFields = fieldsSearchParam.split(",").map(f => f.trim());
-    const allSuggestions = [
-      ...extractSuggestions(pageResults, searchFields),
-      ...extractSuggestions(cmsResults, searchFields)
-    ];
-    const filteredSuggestions = [...new Set(allSuggestions)].filter(s =>
-      s.toLowerCase().includes(query)
-    );
-
-    renderSuggestions(filteredSuggestions);
 
             resultsContainer.innerHTML = "";
             
@@ -445,6 +461,14 @@ renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, pag
         }
     }
 
+    // if (resultType === "Auto result") {
+    //     input.addEventListener("input", debounce(performSearch, 500));
+    // } else {
+    //     form.addEventListener("submit", function (e) {
+    //         e.preventDefault();
+    //         performSearch();
+    //     });
+    // }
 
         if (resultType === "Auto result") {
         let debounceTimeout;
@@ -460,14 +484,6 @@ renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, pag
             performSearch();
         });
     }
-
-    // Hide suggestions when input loses focus (optional)
-input.addEventListener("blur", () => {
-    setTimeout(() => { // delay so click event on suggestion works
-        suggestionBox.innerHTML = "";
-        suggestionBox.style.display = "none";
-    }, 200);
-});
 
 
 
