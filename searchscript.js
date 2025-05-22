@@ -1,6 +1,3 @@
-
-console.log("Hello");
-
 // Generate or get visitor ID
 async function getOrCreateVisitorId() {
     let visitorId = localStorage.getItem('visitorId');
@@ -56,12 +53,9 @@ async function getVisitorSessionToken() {
 }
 
 // Render search results with pagination
-//function renderResults(results, title, displayMode, maxItems, gridColumns = 3, paginationType = "None", container, currentPage = 1, isPageResult = true) {
 function renderResults(results, title, displayMode, maxItems, gridColumns = 3, paginationType = "None", container, currentPage = 1, isPageResult = true, styles = {}) {
-
-
+    
     if (!Array.isArray(results) || results.length === 0) return "";
-
     const totalPages = maxItems ? Math.ceil(results.length / maxItems) : 1;
     const startIndex = maxItems ? (currentPage - 1) * maxItems : 0;
     const endIndex = maxItems ? startIndex + maxItems : results.length;
@@ -92,10 +86,6 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
             if (typeof value === 'object' && value !== null) {
                 const imageUrl = (Array.isArray(value) && value[0]?.url)
                     || value.url || value.src || value.href;
-
-                // if (imageUrl) {
-                //     return `<p><strong>${key}:</strong><br><img src="${imageUrl}" alt="${key}" class="item-image" style="max-width: 100%; border-radius: 4px;" /></p>`;
-                // }
 
     if (imageUrl) {    
     const imageStyle = displayMode === 'Grid'
@@ -488,14 +478,6 @@ renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, pag
         }
     }
 
-    // if (resultType === "Auto result") {
-    //     input.addEventListener("input", debounce(performSearch, 500));
-    // } else {
-    //     form.addEventListener("submit", function (e) {
-    //         e.preventDefault();
-    //         performSearch();
-    //     });
-    // }
 
         if (resultType === "Auto result") {
         let debounceTimeout;
