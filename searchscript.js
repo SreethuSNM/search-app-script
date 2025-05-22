@@ -235,6 +235,7 @@ const fieldsDisplayParam = encodeURIComponent(JSON.stringify(selectedFieldsDispl
     const form = document.querySelector(".w-form, #search-form");
     const input = document.querySelector("input[name='query']");
     const resultsContainer = document.querySelector(".searchresults");
+    const suggestionBox = document.querySelector(".searchsuggestionbox");
     const base_url = "https://search-server.long-rain-28bb.workers.dev";
     const siteName = window.location.hostname.replace(/^www\./, '').split('.')[0];
 
@@ -283,9 +284,49 @@ if (resultType === "Auto result" && submitButton) {
 }
 
 
+    // 🔍 Extract values from specified fields for autocomplete
+function extractSuggestions(results, fields) {
+  const suggestions = [];
+
+  for (const item of results) {
+    for (const field of fields) {
+      const value = item[field];
+      if (typeof value === "string") suggestions.push(value);
+    }
+  }
+
+  return suggestions;
+}
+
+// 💡 Render suggestions in .searchsuggestionbox
+function renderSuggestions(suggestions) {
+  suggestionBox.innerHTML = "";
+  suggestionBox.style.display = suggestions.length > 0 ? "block" : "none";
+
+  if (suggestions.length === 0) return;
+
+  for (const suggestion of suggestions.slice(0, 5)) {
+    const div = document.createElement("div");
+    div.textContent = suggestion;
+    div.className = "suggestion-item";
+    div.onclick = () => {
+      input.value = suggestion;
+      suggestionBox.style.display = "none";
+      performSearch(); // Trigger search immediately
+    };
+    suggestionBox.appendChild(div);
+  }
+}
+
+
     async function performSearch() {
         const query = input.value.trim().toLowerCase();
-        if (!query) return;
+        // if (!query) return;
+        if (!query) {
+    renderSuggestions([]);
+    resultsContainer.innerHTML = "";
+    return;
+  }
 
         
 
@@ -310,6 +351,18 @@ if (resultType === "Auto result" && submitButton) {
                 resultsContainer.innerHTML = "<p>No results found.</p>";
                 return;
             }
+
+            // 🔎 Suggest from all fields
+    const searchFields = fieldsSearchParam.split(",").map(f => f.trim());
+    const allSuggestions = [
+      ...extractSuggestions(pageResults, searchFields),
+      ...extractSuggestions(cmsResults, searchFields)
+    ];
+    const filteredSuggestions = [...new Set(allSuggestions)].filter(s =>
+      s.toLowerCase().includes(query)
+    );
+
+    renderSuggestions(filteredSuggestions);
 
             resultsContainer.innerHTML = "";
             
@@ -392,118 +445,21 @@ renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, pag
         }
     }
 
-    // if (resultType === "Auto result") {
-    //     input.addEventListener("input", debounce(performSearch, 500));
-    // } else {
-    //     form.addEventListener("submit", function (e) {
-    //         e.preventDefault();
-    //         performSearch();
-    //     });
-    // }
 
-
-    const suggestionBox = document.querySelector(".searchsuggestionbox");
-
-async function fetchSuggestions(query) {
-    if (!query) {
-        suggestionBox.innerHTML = "";
-        suggestionBox.style.display = "none";
-        return;
-    }
-
-    try {
-        const headers = { Authorization: `Bearer ${token}` };
-
-        // Fetch collection suggestions
-        const cmsRes = await fetch(`${base_url}/api/search-cms?query=${encodeURIComponent(query)}&siteName=${siteName}&collections=${collectionsParam}&searchFields=${fieldsSearchParam}&displayFields=${fieldsDisplayParam}&limit=5`, { headers });
-        const cmsData = cmsRes.ok ? await cmsRes.json() : { results: [] };
-
-        // Fetch page suggestions
-        const pageRes = await fetch(`${base_url}/api/search-index?query=${encodeURIComponent(query)}&siteName=${siteName}&limit=5`, { headers });
-        const pageData = pageRes.ok ? await pageRes.json() : { results: [] };
-
-        // Add a source property to distinguish results
-        const cmsSuggestions = (cmsData.results || []).map(item => ({ ...item, _source: "collection" }));
-        const pageSuggestions = (pageData.results || []).map(item => ({ ...item, _source: "page" }));
-
-        // Combine suggestions and limit total to 10 (5+5)
-        const suggestions = [...pageSuggestions, ...cmsSuggestions].slice(0, 10);
-
-        if (suggestions.length === 0) {
-            suggestionBox.innerHTML = "";
-            suggestionBox.style.display = "none";
-            return;
-        }
-
-        // Build suggestion list HTML with matchedText for pages
-        suggestionBox.innerHTML = suggestions.map(item => {
-            const title = item.name || item.title || "Untitled";
-            const matchedTextSnippet = item._source === "page" && item.matchedText 
-                ? `<br><small style="color: #666;">${item.matchedText.slice(0, 80)}...</small>`
-                : "";
-
-            return `<div class="suggestion-item" style="padding: 0.4rem 0.6rem; cursor: pointer; border-bottom: 1px solid #eee;">
-                <strong>${title}</strong>${matchedTextSnippet}
-            </div>`;
-        }).join("");
-        suggestionBox.style.display = "block";
-
-        // Add click handlers on each suggestion
-        suggestionBox.querySelectorAll(".suggestion-item").forEach((el, idx) => {
-            el.addEventListener("click", () => {
-                input.value = suggestions[idx].name || suggestions[idx].title || "";
-                suggestionBox.innerHTML = "";
-                suggestionBox.style.display = "none";
+        if (resultType === "Auto result") {
+        let debounceTimeout;
+        input.addEventListener("input", () => {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
                 performSearch();
-            });
+            }, 300); // 300ms debounce
         });
-
-    } catch (error) {
-        console.warn("Suggestion fetch error:", error);
-        suggestionBox.innerHTML = "";
-        suggestionBox.style.display = "none";
-    }
-}
-
-
-
-    // Show suggestions as user types, with debounce
-if (resultType === "Auto result") {
-    let debounceTimeout;
-    input.addEventListener("input", () => {
-        clearTimeout(debounceTimeout);
-        debounceTimeout = setTimeout(() => {
-            const query = input.value.trim().toLowerCase();
-            fetchSuggestions(query);
+    } else {
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
             performSearch();
-        }, 300);
-    });
-} else {
-    input.addEventListener("input", () => {
-        const query = input.value.trim().toLowerCase();
-        fetchSuggestions(query);
-    });
-    form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        suggestionBox.innerHTML = "";
-        suggestionBox.style.display = "none";
-        performSearch();
-    });
-}
-    //     if (resultType === "Auto result") {
-    //     let debounceTimeout;
-    //     input.addEventListener("input", () => {
-    //         clearTimeout(debounceTimeout);
-    //         debounceTimeout = setTimeout(() => {
-    //             performSearch();
-    //         }, 300); // 300ms debounce
-    //     });
-    // } else {
-    //     form.addEventListener("submit", (e) => {
-    //         e.preventDefault();
-    //         performSearch();
-    //     });
-    // }
+        });
+    }
 
     // Hide suggestions when input loses focus (optional)
 input.addEventListener("blur", () => {
