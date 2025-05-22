@@ -56,7 +56,7 @@ async function getVisitorSessionToken() {
 }
 
 // Render search results with pagination
-//function renderResults(results, title, displayMode, maxItems, gridColumns = 3, paginationType = "None", container, currentPage = 1, isPageResult = true) {
+
 function renderResults(results, title, displayMode, maxItems, gridColumns = 3, paginationType = "None", container, currentPage = 1, isPageResult = true, styles = {}) {
 
 
@@ -133,10 +133,14 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
 //       </div>
 // `; }).join("");
 
-       const href = item.detailUrl || item.publishedPath || "#";
+       // const href = item.detailUrl || item.publishedPath || "#";
+
+      const url = isPageResult
+    ? (item.publishedPath || item.slug || "#")
+    : (cmsDetailUrls && cmsDetailUrls[index]) || item.publishedPath || "#";
 
 return `
-  <a href="${href}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
+  <a href="${url}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
     <div class="search-result-item" style="
       background: #fff;
       border: 1px solid #ddd;
@@ -416,11 +420,18 @@ suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
 
             const pageResults = Array.isArray(pageData.results) ? pageData.results : [];
             const cmsResults = Array.isArray(cmsData.results) ? cmsData.results : [];
+            const cmsDetailUrls = Array.isArray(cmsData.detailUrls) ? cmsData.detailUrls : [];
 
             if (pageResults.length === 0 && cmsResults.length === 0) {
                 resultsContainer.innerHTML = "<p>No results found.</p>";
                 return;
             }
+
+
+            cmsResults.forEach((item, index) => {
+  const url = cmsDetailUrls[index] || "#";
+  // use `url` to build your anchor href or whatever you want
+});
 
             resultsContainer.innerHTML = "";
             
