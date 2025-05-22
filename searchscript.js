@@ -68,8 +68,11 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
         borderRadius = "6px",
         otherFieldsColor = "#333",
         otherFieldsFontSize = "14px",
-         boxShadow: searchConfigDiv.getAttribute("data-box-shadow") === "true"
+        
     } = styles;
+
+// ✅ Correct way to assign boxShadow using searchConfigDiv
+const boxShadow = styles.boxShadow ?? (searchConfigDiv.getAttribute("data-box-shadow") === "true");
 
    const itemsHtml = pagedResults.map(item => {
     const titleText = item.name || item.title || "Untitled";
