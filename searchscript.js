@@ -220,8 +220,8 @@ const titleColor = searchConfigDiv.getAttribute("data-title-color") || "#000";
 const otherFieldsColor = searchConfigDiv.getAttribute("data-other-fields-color") || "#333";
 const otherFieldsFontSize = searchConfigDiv.getAttribute("data-other-fields-font-size") || "14px";
 const borderRadius = searchConfigDiv.getAttribute("data-border-radius") || "6px";
-    const boxShadowAttr = searchConfigDiv.getAttribute("data-box-shadow");
-const boxShadow = boxShadowAttr === "true";
+    const boxShadow = searchConfigDiv.getAttribute("data-box-shadow");
+
 
 
 
