@@ -310,16 +310,6 @@ if (resultType === "Auto result" && submitButton) {
     `;
     document.head.appendChild(style);
 
-    // Create suggestion box if it doesn't exist
-    let suggestionBox = document.querySelector(".searchsuggestionbox");
-    if (!suggestionBox) {
-        suggestionBox = document.createElement("div");
-        suggestionBox.className = "searchsuggestionbox";
-        // Append right after the input or somewhere appropriate in DOM
-         input.parentNode.style.position = "relative";
-        input.parentNode.appendChild(suggestionBox);
-    }
-
   const suggestionCache = {}; // Cache: query -> results
 
 // Create suggestion box if it doesn't exist
