@@ -68,7 +68,7 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
         borderRadius = "6px",
         otherFieldsColor = "#333",
         otherFieldsFontSize = "14px",
-          boxShadow = true,
+         boxShadow: searchConfigDiv.getAttribute("data-box-shadow") === "true"
     } = styles;
 
    const itemsHtml = pagedResults.map(item => {
@@ -220,7 +220,8 @@ const titleColor = searchConfigDiv.getAttribute("data-title-color") || "#000";
 const otherFieldsColor = searchConfigDiv.getAttribute("data-other-fields-color") || "#333";
 const otherFieldsFontSize = searchConfigDiv.getAttribute("data-other-fields-font-size") || "14px";
 const borderRadius = searchConfigDiv.getAttribute("data-border-radius") || "6px";
-    const boxShadow = searchConfigDiv.getAttribute("data-box-shadow");
+   const boxShadow = searchConfigDiv.getAttribute("data-box-shadow") === "true";
+
 
 
 
