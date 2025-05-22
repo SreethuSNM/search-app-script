@@ -320,64 +320,101 @@ if (resultType === "Auto result" && submitButton) {
         input.parentNode.appendChild(suggestionBox);
     }
 
-    // Add input event listener for suggestion box
-    input.addEventListener("input", async () => {
-        const query = input.value.trim();
+  const suggestionCache = {}; // Cache: query -> results
 
-        if (!query) {
-            suggestionBox.style.display = "none";
-            suggestionBox.innerHTML = "";
-            return;
-        }
+// Create suggestion box if it doesn't exist
+let suggestionBox = document.querySelector(".searchsuggestionbox");
+if (!suggestionBox) {
+  suggestionBox = document.createElement("div");
+  suggestionBox.className = "searchsuggestionbox";
+  input.parentNode.style.position = "relative";
+  input.parentNode.appendChild(suggestionBox);
+}
 
-        try {
-            const url = `https://search-server.long-rain-28bb.workers.dev/api/suggestions?query=${encodeURIComponent(query)}&siteName=${encodeURIComponent(siteName)}&collections=${collectionsParam}&searchFields=${fieldsSearchParam}`;
+// Add input event listener for suggestion box
+input.addEventListener("input", async () => {
+  const query = input.value.trim().toLowerCase();
 
-            const response = await fetch(url);
+  if (!query) {
+    suggestionBox.style.display = "none";
+    suggestionBox.innerHTML = "";
+    return;
+  }
 
-            if (!response.ok) throw new Error("Network response was not ok");
+  // ✅ Use cache if we have it
+  if (suggestionCache[query]) {
+    renderSuggestions(suggestionCache[query]);
+    return;
+  }
 
-            
-            const data = await response.json();
+  // 🔁 Try to reuse prefix cache (e.g. "a" for "an")
+  for (let i = query.length - 1; i >= 1; i--) {
+    const prefix = query.slice(0, i);
+    if (suggestionCache[prefix]) {
+      const filtered = filterCachedSuggestions(suggestionCache[prefix], query);
+      renderSuggestions(filtered);
+      return;
+    }
+  }
+
+  try {
+    const url = `https://search-server.long-rain-28bb.workers.dev/api/suggestions?query=${encodeURIComponent(query)}&siteName=${encodeURIComponent(siteName)}&collections=${collectionsParam}&searchFields=${fieldsSearchParam}`;
+    const response = await fetch(url);
+
+    if (!response.ok) throw new Error("Network response was not ok");
+
+    const data = await response.json();
     const { pageSuggestions = [], collectionSuggestions = [] } = data;
 
-    // Build the suggestions list based on selectedOption
-    let suggestions = [];
+    // Cache full result by query
+    suggestionCache[query] = { pageSuggestions, collectionSuggestions };
 
+    renderSuggestions(suggestionCache[query]);
 
-             if ((selectedOption === "Pages" || selectedOption === "Both") && pageSuggestions.length > 0) {
-      suggestions.push(...pageSuggestions.map(s => `<div class="suggestion-item page-suggestion">${s}</div>`));
-    }
-
-    if ((selectedOption === "Collection" || selectedOption === "Both") && collectionSuggestions.length > 0) {
-      suggestions.push(...collectionSuggestions.map(s => `<div class="suggestion-item collection-suggestion">${s}</div>`));
-    }
-
-
-
-            if (suggestions.length > 0) {
-      suggestionBox.style.display = "block";
-      suggestionBox.innerHTML = suggestions.join("");
-
-                // Attach click listeners to suggestions
-suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
-  item.addEventListener('click', () => {
-    input.value = item.textContent;
+  } catch (err) {
+    console.error("Failed to fetch suggestions:", err);
     suggestionBox.style.display = "none";
-    performSearch(); // Trigger the search
-  });
+    suggestionBox.innerHTML = "";
+  }
 });
 
-            } else {
-                suggestionBox.style.display = "none";
-                suggestionBox.innerHTML = "";
-            }
-        } catch (err) {
-            console.error("Failed to fetch suggestions:", err);
-            suggestionBox.style.display = "none";
-            suggestionBox.innerHTML = "";
-        }
+// Render suggestion box
+function renderSuggestions({ pageSuggestions, collectionSuggestions }) {
+  let suggestions = [];
+
+  if ((selectedOption === "Pages" || selectedOption === "Both") && pageSuggestions.length > 0) {
+    suggestions.push(...pageSuggestions.map(s => `<div class="suggestion-item page-suggestion">${s}</div>`));
+  }
+
+  if ((selectedOption === "Collection" || selectedOption === "Both") && collectionSuggestions.length > 0) {
+    suggestions.push(...collectionSuggestions.map(s => `<div class="suggestion-item collection-suggestion">${s}</div>`));
+  }
+
+  if (suggestions.length > 0) {
+    suggestionBox.style.display = "block";
+    suggestionBox.innerHTML = suggestions.join("");
+    suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
+      item.addEventListener('click', () => {
+        input.value = item.textContent;
+        suggestionBox.style.display = "none";
+        performSearch();
+      });
     });
+  } else {
+    suggestionBox.style.display = "none";
+    suggestionBox.innerHTML = "";
+  }
+}
+
+// Filter cached results based on a longer query
+function filterCachedSuggestions({ pageSuggestions, collectionSuggestions }, query) {
+  const filterFn = s => s.toLowerCase().includes(query);
+  return {
+    pageSuggestions: pageSuggestions.filter(filterFn),
+    collectionSuggestions: collectionSuggestions.filter(filterFn)
+  };
+}
+
 
 
     async function performSearch() {
