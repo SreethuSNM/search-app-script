@@ -112,26 +112,54 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
                 .join("");
 
     
-const titleHtml = isPageResult
-  ? `<h4><a href="${url}" target="_blank">${titleText}</a></h4>`
-  : `<h4 style="font-size: ${titleFontSize}; font-family: ${titleFontFamily}; color: ${titleColor}; margin-bottom: 0.5rem;">${titleText}</h4>`;
+// const titleHtml = isPageResult
+//   ? `<h4><a href="${url}" target="_blank">${titleText}</a></h4>`
+//   : `<h4 style="font-size: ${titleFontSize}; font-family: ${titleFontFamily}; color: ${titleColor}; margin-bottom: 0.5rem;">${titleText}</h4>`;
 
 
 
 
-      return `
-  <div class="search-result-item" style="
-        background: #fff;
-        border: 1px solid #ddd;
-        border-radius: ${borderRadius};
-        padding: 1rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      ">
-    ${titleHtml}
-    ${matchedText ? `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${matchedText}...</p>` : fieldsHtml}
-      </div>
+//       return `
+//   <div class="search-result-item" style="
+//         background: #fff;
+//         border: 1px solid #ddd;
+//         border-radius: ${borderRadius};
+//         padding: 1rem;
+//         margin-bottom: 1rem;
+//         box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+//       ">
+//     ${titleHtml}
+//     ${matchedText ? `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${matchedText}...</p>` : fieldsHtml}
+//       </div>
+// `; }).join("");
+
+       const href = item.detailUrl || item.publishedPath || "#";
+
+return `
+  <a href="${href}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: inherit;">
+    <div class="search-result-item" style="
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: ${borderRadius};
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: box-shadow 0.2s;
+    ">
+      <h4 style="
+        font-size: ${titleFontSize};
+        font-family: ${titleFontFamily};
+        color: ${titleColor};
+        margin-bottom: 0.5rem;
+      ">${titleText}</h4>
+
+      ${matchedText
+        ? `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${matchedText}...</p>`
+        : fieldsHtml}
+    </div>
+  </a>
 `; }).join("");
+
 
     let paginationHtml = "";
     if (paginationType === "Numbered" && totalPages > 1) {
