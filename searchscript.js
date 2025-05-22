@@ -413,11 +413,21 @@ async function fetchSuggestions(query) {
 
     try {
         const headers = { Authorization: `Bearer ${token}` };
-        // We'll just call your existing search endpoint but limit results to top 5 for suggestions
-        const res = await fetch(`${base_url}/api/suggestions?query=${encodeURIComponent(query)}&siteName=${siteName}`, { headers });
-        if (!res.ok) throw new Error('Failed to fetch suggestions');
-        const data = await res.json();
-        const suggestions = data.results.slice(0, 5); // top 5 suggestions
+
+        // Fetch collection suggestions
+        const cmsRes = await fetch(`${base_url}/api/search-cms?query=${encodeURIComponent(query)}&siteName=${siteName}&collections=${collectionsParam}&searchFields=${fieldsSearchParam}&displayFields=${fieldsDisplayParam}&limit=5`, { headers });
+        const cmsData = cmsRes.ok ? await cmsRes.json() : { results: [] };
+
+        // Fetch page suggestions
+        const pageRes = await fetch(`${base_url}/api/search-index?query=${encodeURIComponent(query)}&siteName=${siteName}&limit=5`, { headers });
+        const pageData = pageRes.ok ? await pageRes.json() : { results: [] };
+
+        // Add a source property to distinguish results
+        const cmsSuggestions = (cmsData.results || []).map(item => ({ ...item, _source: "collection" }));
+        const pageSuggestions = (pageData.results || []).map(item => ({ ...item, _source: "page" }));
+
+        // Combine suggestions and limit total to 10 (5+5)
+        const suggestions = [...pageSuggestions, ...cmsSuggestions].slice(0, 10);
 
         if (suggestions.length === 0) {
             suggestionBox.innerHTML = "";
@@ -425,10 +435,16 @@ async function fetchSuggestions(query) {
             return;
         }
 
-        // Build suggestion list HTML
+        // Build suggestion list HTML with matchedText for pages
         suggestionBox.innerHTML = suggestions.map(item => {
             const title = item.name || item.title || "Untitled";
-            return `<div class="suggestion-item" style="padding: 0.4rem 0.6rem; cursor: pointer; border-bottom: 1px solid #eee;">${title}</div>`;
+            const matchedTextSnippet = item._source === "page" && item.matchedText 
+                ? `<br><small style="color: #666;">${item.matchedText.slice(0, 80)}...</small>`
+                : "";
+
+            return `<div class="suggestion-item" style="padding: 0.4rem 0.6rem; cursor: pointer; border-bottom: 1px solid #eee;">
+                <strong>${title}</strong>${matchedTextSnippet}
+            </div>`;
         }).join("");
         suggestionBox.style.display = "block";
 
@@ -441,12 +457,14 @@ async function fetchSuggestions(query) {
                 performSearch();
             });
         });
+
     } catch (error) {
         console.warn("Suggestion fetch error:", error);
         suggestionBox.innerHTML = "";
         suggestionBox.style.display = "none";
     }
 }
+
 
 
     // Show suggestions as user types, with debounce
