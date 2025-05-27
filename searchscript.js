@@ -79,32 +79,35 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
     const url = item.publishedPath || item.slug || "#";
     const matchedText = item.matchedText?.slice(0, 200) || "";
 
-        const fieldsHtml = Object.entries(item)
- .filter(([key]) => key !== "name" && key !== "title" && key !== "detailUrl")
-
+     const fieldsHtml = Object.entries(item)
+  .filter(([key]) => key !== "name" && key !== "title" && key !== "detailUrl")
   .map(([key, value]) => {
-            if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
-                value = new Date(value).toLocaleString();
-            }
+    if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
+      value = new Date(value).toLocaleString();
+    }
 
-            if (typeof value === 'object' && value !== null) {
-                const imageUrl = (Array.isArray(value) && value[0]?.url)
-                    || value.url || value.src || value.href;
+    if (typeof value === 'object' && value !== null) {
+      const imageUrl = (Array.isArray(value) && value[0]?.url)
+          || value.url || value.src || value.href;
 
-    if (imageUrl) {    
-    const imageStyle = displayMode === 'Grid'
-        ? 'max-width: 100%;'
-        : 'max-width: 50%;'; // Reduce width to 50% in List mode
+      if (imageUrl) {
+        const imageStyle = displayMode === 'Grid'
+          ? 'max-width: 100%;'
+          : 'max-width: 50%;'; // Reduce width to 50% in List mode
 
-    return `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};"><strong>${key}:</strong><br><img src="${imageUrl}" alt="${key}" class="item-image" style="${imageStyle} border-radius: 4px;" /></p>`;
-                        }
+        return `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">
+                  <img src="${imageUrl}" alt="${key}" class="item-image" style="${imageStyle} border-radius: 4px;" />
+                </p>`;
+      }
 
-                        return `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};"><strong>${key}:</strong> ${JSON.stringify(value)}</p>`;
-                    }
+      return `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${JSON.stringify(value)}</p>`;
+    }
 
-                    return `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};"><strong>${key}:</strong> ${value}</p>`;
-                })
-                .join("");
+    // **Here is the key change: only show value, no key label**
+    return `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${value}</p>`;
+  })
+  .join("");
+
 
     
 const titleHtml = `
