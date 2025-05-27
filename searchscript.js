@@ -158,7 +158,7 @@ return `
 
     const sectionHtml = `
         <section style="margin-top: 2rem;">
-            <h3>${title}</h3>
+            
             <div class="search-results-wrapper" style="
   display: ${displayMode === 'Grid' ? 'grid' : 'block'};
   grid-template-columns: repeat(${gridColumns}, 1fr);
