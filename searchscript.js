@@ -413,57 +413,23 @@ suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
 
             resultsContainer.innerHTML = "";
             
-            if (shouldOpenInNewPage) {
-    const container1 = document.createElement('div');
-    const container2 = document.createElement('div');
-
-    let resultsHTML = "";
-
-    if ((selectedOption === "Pages" || selectedOption === "Both") && pageResults.length > 0) {
-        renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container1, 1, true,styles); // isPageResult = true
-  resultsHTML += container1.innerHTML;
-        
-    }
-
-    if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults.length > 0) {
-        renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container2, 1, false,styles); // isPageResult = false
-  resultsHTML += container2.innerHTML;
-    }
-
-    const newTab = window.open();
-    newTab.document.write(`
-        <html>
-        <head>
-            <title>Search Results</title>
-            <style>
-                body {
-                    font-family: sans-serif;
-                    padding: 2rem;
-                }
-                .search-results-wrapper {
-                    display: ${displayMode === 'Grid' ? 'grid' : 'block'};
-                    grid-template-columns: repeat(${gridColumns}, 1fr);
-                    gap: 1rem;
-                }
-                .search-result-item {
-                    padding: 1rem;
-                    border: 1px solid #ddd;
-                    border-radius: 6px;
-                    background: #fff;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-                }
-                h3 {
-                    margin-top: 2rem;
-                }
-            </style>
-        </head>
-        <body>
-            <h2>Search Results</h2>
-            ${resultsHTML}
-        </body>
-        </html>
-    `);
-    newTab.document.close();
+           if (shouldOpenInNewPage) {
+        // Save results to localStorage and open results page
+        const resultsKey = `searchResults_${Date.now()}`;
+        const dataToStore = {
+          query,
+          pageResults,
+          cmsResults,
+          selectedOption,
+          displayMode,
+          maxItems,
+          gridColumns,
+          paginationType,
+          styles,
+        };
+        localStorage.setItem(resultsKey, JSON.stringify(dataToStore));
+        window.open(`/search-result?resultsKey=${encodeURIComponent(resultsKey)}`, "_blank");
+        return;
 } else {
     resultsContainer.innerHTML = "";
 
@@ -491,6 +457,59 @@ renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, pag
             resultsContainer.innerHTML = "<p>No results found.</p>";
         }
     }
+
+
+
+    
+  // --- Render stored results on /search-result page ---
+  function tryRenderStoredResults() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const resultsKey = urlParams.get('resultsKey');
+    if (!resultsKey) return false;
+
+    const storedData = localStorage.getItem(resultsKey);
+    if (!storedData) return false;
+
+    const { query, pageResults, cmsResults, selectedOption, displayMode, maxItems, gridColumns, paginationType, styles } = JSON.parse(storedData);
+
+    const resultsContainer = document.getElementById('results-container');
+    if (!resultsContainer) return false;
+
+    resultsContainer.innerHTML = `<h1>Search Results for "${query}"</h1>`;
+
+    if ((selectedOption === "Pages" || selectedOption === "Both") && pageResults.length > 0) {
+      const container = document.createElement('div');
+      resultsContainer.appendChild(container);
+      renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container, 1, true, styles);
+    }
+
+    if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults.length > 0) {
+      const container = document.createElement('div');
+      resultsContainer.appendChild(container);
+      renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container, 1, false, styles);
+    }
+
+    localStorage.removeItem(resultsKey);
+    return true;
+  }
+
+  // --- Init ---
+  window.addEventListener('DOMContentLoaded', () => {
+    if (window.location.pathname === '/search-result') {
+      if (!tryRenderStoredResults()) {
+        // Optional: you can fallback to fetch results here if no stored data
+        // Or show a message:
+        const resultsContainer = document.getElementById('results-container');
+        if (resultsContainer) resultsContainer.innerHTML = "<p>No search results to display.</p>";
+      }
+    }
+
+    // Attach your performSearch to a button or form submit as needed,
+    // or call performSearch() elsewhere as required.
+  });
+
+  // Expose performSearch globally
+  window.performSearch = performSearch;
 
 
         if (resultType === "Auto result") {
