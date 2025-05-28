@@ -499,7 +499,7 @@ renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, pag
       if (!tryRenderStoredResults()) {
         // Optional: you can fallback to fetch results here if no stored data
         // Or show a message:
-        const resultsContainer = document.getElementById('results-container');
+        const resultsContainer = document.querySelector(".searchappresults");
         if (resultsContainer) resultsContainer.innerHTML = "<p>No search results to display.</p>";
       }
     }
