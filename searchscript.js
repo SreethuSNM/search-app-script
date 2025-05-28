@@ -428,7 +428,7 @@ suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
           styles,
         };
         localStorage.setItem(resultsKey, JSON.stringify(dataToStore));
-        window.open(`/search-result?resultsKey=${encodeURIComponent(resultsKey)}`, "_blank");
+        window.open(`/search-results?resultsKey=${encodeURIComponent(resultsKey)}`, "_blank");
         return;
 } else {
     resultsContainer.innerHTML = "";
@@ -495,7 +495,7 @@ renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, pag
 
   // --- Init ---
   window.addEventListener('DOMContentLoaded', () => {
-    if (window.location.pathname === '/search-result') {
+    if (window.location.pathname === '/search-results') {
       if (!tryRenderStoredResults()) {
         // Optional: you can fallback to fetch results here if no stored data
         // Or show a message:
