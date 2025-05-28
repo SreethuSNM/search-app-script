@@ -255,6 +255,10 @@ const fieldsDisplayParam = encodeURIComponent(JSON.stringify(selectedFieldsDispl
     const base_url = "https://search-server.long-rain-28bb.workers.dev";
     const siteName = window.location.hostname.replace(/^www\./, '').split('.')[0];
 
+     if (input) {
+    input.style.borderRadius = '8px'; 
+  }
+
     // ✅ Hide submit button if Auto result
 const submitButton = form?.querySelector("input[type='submit']");
 if (resultType === "Auto result" && submitButton) {
