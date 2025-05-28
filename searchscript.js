@@ -74,77 +74,152 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
 // ✅ Correct way to assign boxShadow using searchConfigDiv
 //const boxShadow = styles.boxShadow ?? (searchConfigDiv.getAttribute("data-box-shadow") === "true");
 
-   const itemsHtml = pagedResults.map(item => {
-    const titleText = item.name || item.title || "Untitled";
-    const url = item.publishedPath || item.slug || "#";
-    const matchedText = item.matchedText?.slice(0, 200) || "";
+//    const itemsHtml = pagedResults.map(item => {
+//     const titleText = item.name || item.title || "Untitled";
+//     const url = item.publishedPath || item.slug || "#";
+//     const matchedText = item.matchedText?.slice(0, 200) || "";
 
-     const fieldsHtml = Object.entries(item)
-  .filter(([key]) => key !== "name" && key !== "title" && key !== "detailUrl")
-  .map(([key, value]) => {
-    if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
-      value = new Date(value).toLocaleString();
-    }
+//      const fieldsHtml = Object.entries(item)
+//   .filter(([key]) => key !== "name" && key !== "title" && key !== "detailUrl")
+//   .map(([key, value]) => {
+//     if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
+//       value = new Date(value).toLocaleString();
+//     }
 
-    if (typeof value === 'object' && value !== null) {
-      const imageUrl = (Array.isArray(value) && value[0]?.url)
-          || value.url || value.src || value.href;
+//     if (typeof value === 'object' && value !== null) {
+//       const imageUrl = (Array.isArray(value) && value[0]?.url)
+//           || value.url || value.src || value.href;
 
-      if (imageUrl) {
-        const imageStyle = displayMode === 'Grid'
-          ? 'max-width: 100%;'
-          : 'max-width: 50%;'; // Reduce width to 50% in List mode
+//       if (imageUrl) {
+//         const imageStyle = displayMode === 'Grid'
+//           ? 'max-width: 100%;'
+//           : 'max-width: 50%;'; // Reduce width to 50% in List mode
 
-        return `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">
-                  <img src="${imageUrl}" alt="${key}" class="item-image" style="${imageStyle} border-radius: 4px;" />
-                </p>`;
-      }
+//         return `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">
+//                   <img src="${imageUrl}" alt="${key}" class="item-image" style="${imageStyle} border-radius: 4px;" />
+//                 </p>`;
+//       }
 
-      return `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${JSON.stringify(value)}</p>`;
-    }
+//       return `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${JSON.stringify(value)}</p>`;
+//     }
 
-    // **Here is the key change: only show value, no key label**
-    return `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${value}</p>`;
-  })
-  .join("");
+//     // **Here is the key change: only show value, no key label**
+//     return `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${value}</p>`;
+//   })
+//   .join("");
 
 
     
-const titleHtml = `
-        <h4 style="font-size: ${titleFontSize}; font-family: ${titleFontFamily}; color: ${titleColor}; margin-bottom: 0.5rem;">
+// const titleHtml = `
+//         <h4 style="font-size: ${titleFontSize}; font-family: ${titleFontFamily}; color: ${titleColor}; margin-bottom: 0.5rem;">
+//             ${titleText}
+//         </h4>
+//     `;
+
+
+
+// const detailUrl = isPageResult
+//   ? (item.publishedPath || item.slug || "#")
+//   : (item.detailUrl || "#");
+
+//        const boxShadowStyle = boxShadow ? "0 2px 6px rgba(255, 0, 0, 0.4)" : "none";
+
+// const cardContent = `
+//   <div class="search-result-item" 
+//   style="
+//     background: #fff;
+//     border: 1px solid #ddd;
+//     border-radius: ${borderRadius};
+//     padding: 1rem;
+//     margin-bottom: 1rem;
+//     box-shadow: ${boxShadowStyle};
+//   ">
+//     ${titleHtml}
+//     ${matchedText ? `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${matchedText}...</p>` : fieldsHtml}
+//   </div>
+// `;
+
+// return `
+//   <a href="${detailUrl}" target="_blank" style="text-decoration: none; color: inherit;">
+//     ${cardContent}
+//   </a>
+// `;
+//  }).join("");
+
+    const itemsHtml = pagedResults.map(item => {
+  const titleText = item.name || item.title || "Untitled";
+  const detailUrl = isPageResult
+    ? (item.publishedPath || item.slug || "#")
+    : (item.detailUrl || "#");
+  const matchedText = item.matchedText?.slice(0, 200) || "";
+
+  const fieldsHtml = Object.entries(item)
+    .filter(([key]) => key !== "name" && key !== "title" && key !== "detailUrl")
+    .map(([key, value]) => {
+      if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}T/)) {
+        value = new Date(value).toLocaleString();
+      }
+
+      if (typeof value === 'object' && value !== null) {
+        const imageUrl = (Array.isArray(value) && value[0]?.url)
+          || value.url || value.src || value.href;
+
+        if (imageUrl) {
+          const imageStyle = displayMode === 'Grid'
+            ? 'max-width: 100%;'
+            : 'max-width: 50%;';
+
+          return `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">
+                    <img src="${imageUrl}" alt="${key}" class="item-image" style="${imageStyle} border-radius: 4px;" />
+                  </p>`;
+        }
+
+        return `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${JSON.stringify(value)}</p>`;
+      }
+
+      return `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${value}</p>`;
+    })
+    .join("");
+
+  const boxShadowStyle = boxShadow ? "0 2px 6px rgba(255, 0, 0, 0.4)" : "none";
+
+  if (displayMode === "Grid") {
+    // ✅ Grid: whole card is clickable
+    return `
+      <a href="${detailUrl}" target="_blank" style="text-decoration: none; color: inherit;">
+        <div class="search-result-item" 
+          style="
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: ${borderRadius};
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: ${boxShadowStyle};
+          ">
+          <h4 style="font-size: ${titleFontSize}; font-family: ${titleFontFamily}; color: ${titleColor}; margin-bottom: 0.5rem;">
             ${titleText}
-        </h4>
+          </h4>
+          ${matchedText
+            ? `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${matchedText}...</p>`
+            : fieldsHtml}
+        </div>
+      </a>
     `;
+  } else {
+    // ✅ List: no card, only title is clickable
+    return `
+      <div class="search-result-item" style="margin-bottom: 1rem;">
+        <a href="${detailUrl}" target="_blank" style="font-size: ${titleFontSize}; font-family: ${titleFontFamily}; color: ${titleColor}; font-weight: bold; text-decoration: none;">
+          ${titleText}
+        </a>
+        ${matchedText
+          ? `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${matchedText}...</p>`
+          : fieldsHtml}
+      </div>
+    `;
+  }
+}).join("");
 
-
-
-const detailUrl = isPageResult
-  ? (item.publishedPath || item.slug || "#")
-  : (item.detailUrl || "#");
-
-       const boxShadowStyle = boxShadow ? "0 2px 6px rgba(255, 0, 0, 0.4)" : "none";
-
-const cardContent = `
-  <div class="search-result-item" 
-  style="
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: ${borderRadius};
-    padding: 1rem;
-    margin-bottom: 1rem;
-    box-shadow: ${boxShadowStyle};
-  ">
-    ${titleHtml}
-    ${matchedText ? `<p style="color: ${otherFieldsColor}; font-size: ${otherFieldsFontSize};">${matchedText}...</p>` : fieldsHtml}
-  </div>
-`;
-
-return `
-  <a href="${detailUrl}" target="_blank" style="text-decoration: none; color: inherit;">
-    ${cardContent}
-  </a>
-`;
- }).join("");
 
     let paginationHtml = "";
     if (paginationType === "Numbered" && totalPages > 1) {
