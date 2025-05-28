@@ -134,7 +134,7 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
   } else {
     //  List: no card, only title is clickable
     return `
-      <div class="search-result-item" style="margin-bottom: 1rem;">
+      <div class="search-result-item" style="margin-bottom: 1rem; padding-left: 1rem;">
         <a href="${detailUrl}" target="_blank" style="font-size: ${titleFontSize}; font-family: ${titleFontFamily}; color: ${titleColor}; font-weight: bold; text-decoration: underline;">
           ${titleText}
         </a>
