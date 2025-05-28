@@ -110,7 +110,7 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
   const boxShadowStyle = boxShadow ? "0 2px 6px rgba(255, 0, 0, 0.4)" : "none";
 
   if (displayMode === "Grid") {
-    // ✅ Grid: whole card is clickable
+    //  Grid: whole card is clickable
     return `
       <a href="${detailUrl}" target="_blank" style="text-decoration: none; color: inherit;">
         <div class="search-result-item" 
@@ -132,7 +132,7 @@ function renderResults(results, title, displayMode, maxItems, gridColumns = 3, p
       </a>
     `;
   } else {
-    // ✅ List: no card, only title is clickable
+    //  List: no card, only title is clickable
     return `
       <div class="search-result-item" style="margin-bottom: 1rem;">
         <a href="${detailUrl}" target="_blank" style="font-size: ${titleFontSize}; font-family: ${titleFontFamily}; color: ${titleColor}; font-weight: bold; text-decoration: underline;">
@@ -203,7 +203,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const searchConfigDiv = document.querySelector('#search-config');
 
     if (!searchConfigDiv) {
-        console.error("❌ 'search-config' div not found.");
+        console.error(" 'search-config' div not found.");
         return;
     }
 
@@ -222,22 +222,17 @@ document.addEventListener("DOMContentLoaded", async function () {
     const shouldOpenInNewPage = resultPage === "New Page";
 
     const titleFontSize = searchConfigDiv.getAttribute("data-title-font-size") || "16px";
-const titleFontFamily = searchConfigDiv.getAttribute("data-title-font-family") || "Arial";
-const titleColor = searchConfigDiv.getAttribute("data-title-color") || "#000";
-const otherFieldsColor = searchConfigDiv.getAttribute("data-other-fields-color") || "#333";
-const otherFieldsFontSize = searchConfigDiv.getAttribute("data-other-fields-font-size") || "14px";
-const borderRadius = searchConfigDiv.getAttribute("data-border-radius") || "6px";
-   const boxShadow = searchConfigDiv.getAttribute("data-box-shadow") === "true";
-
-
-
-
+    const titleFontFamily = searchConfigDiv.getAttribute("data-title-font-family") || "Arial";
+    const titleColor = searchConfigDiv.getAttribute("data-title-color") || "#000";
+    const otherFieldsColor = searchConfigDiv.getAttribute("data-other-fields-color") || "#333";
+    const otherFieldsFontSize = searchConfigDiv.getAttribute("data-other-fields-font-size") || "14px";
+    const borderRadius = searchConfigDiv.getAttribute("data-border-radius") || "6px";
+    const boxShadow = searchConfigDiv.getAttribute("data-box-shadow") === "true";
 
     const maxItems = displayMode === "Grid" ? gridRows * gridColumns : itemsPerPage;
-
     const collectionsParam = encodeURIComponent(JSON.stringify(selectedCollections));
     const fieldsSearchParam = encodeURIComponent(JSON.stringify(selectedFieldsSearch));
-const fieldsDisplayParam = encodeURIComponent(JSON.stringify(selectedFieldsDisplay));
+    const fieldsDisplayParam = encodeURIComponent(JSON.stringify(selectedFieldsDisplay));
 
 
      const styles = {
@@ -260,7 +255,7 @@ const fieldsDisplayParam = encodeURIComponent(JSON.stringify(selectedFieldsDispl
     input.style.borderRadius = '8px'; 
   }
 
-    // ✅ Hide submit button if Auto result
+    // Hide submit button if Auto result
 const submitButton = form?.querySelector("input[type='submit']");
 if (resultType === "Auto result" && submitButton) {
     submitButton.style.display = "none";
@@ -284,7 +279,7 @@ if (resultType === "Auto result" && submitButton) {
 
   const iconContainer = document.querySelector(".searchiconcontainer");
   if (!iconContainer) {
-    console.error("❌ '.searchiconcontainer' element not found.");
+    console.error("'.searchiconcontainer' element not found.");
     return;
   }
 
