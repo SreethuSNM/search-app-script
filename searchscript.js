@@ -494,7 +494,8 @@ renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, pag
     styles
   } = JSON.parse(data);
 
-  const resultsContainer = document.getElementById("results-container") || document.body;
+  const resultsContainer = document.querySelector(".searchappresults") || document.body;
+
 
   if ((selectedOption === "Pages" || selectedOption === "Both") && Array.isArray(pageResults) && pageResults.length > 0) {
     const container = document.createElement("div");
