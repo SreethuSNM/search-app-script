@@ -414,23 +414,12 @@ suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
             resultsContainer.innerHTML = "";
             
           if (shouldOpenInNewPage) {
-  console.log("Redirecting to /search-results...");
-  sessionStorage.setItem("searchResults", JSON.stringify({
-    query,
-    pageResults,
-    cmsResults,
-    selectedOption,
-    displayMode,
-    maxItems,
-    gridColumns,
-    paginationType,
-    styles
-  }));
-
-  // window.location.href = "/search-results";
-              window.open('/search-results');
-
-  return;
+      sessionStorage.setItem("searchResults", JSON.stringify({
+        query, pageResults, cmsResults, selectedOption,
+        displayMode, maxItems, gridColumns, paginationType, styles
+      }));
+      window.open("/search-results", "_blank");
+      return;
 
 } else {
     resultsContainer.innerHTML = "";
@@ -495,8 +484,7 @@ renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, pag
     renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container, 1, false, styles);
   }
 
-  // Optional: clear the stored results so they're not reused on next visit
-  // sessionStorage.removeItem("searchResults");
+  
 
         if (resultType === "Auto result") {
         let debounceTimeout;
@@ -519,7 +507,33 @@ document.addEventListener('click', (event) => {
 });
 
 
-    
+  // === Handle Result Page ===
+  if (window.location.pathname.includes("/search-results")) {
+    const data = sessionStorage.getItem("searchResults");
+    if (!data) return;
+
+    const {
+      query, pageResults, cmsResults, selectedOption,
+      displayMode, maxItems, gridColumns, paginationType, styles
+    } = JSON.parse(data);
+
+    const container = document.querySelector(".searchappresults") || document.body;
+
+    if ((selectedOption === "Pages" || selectedOption === "Both") && pageResults?.length) {
+      const div = document.createElement("div");
+      container.appendChild(div);
+      renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, div, 1, true, styles);
+    }
+
+    if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults?.length) {
+      const div = document.createElement("div");
+      container.appendChild(div);
+      renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, div, 1, false, styles);
+    }
+
+    // sessionStorage.removeItem("searchResults");
+  }
+  
 
 
 });   
