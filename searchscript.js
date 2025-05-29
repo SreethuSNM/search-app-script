@@ -430,40 +430,23 @@ suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
   resultsHTML += container2.innerHTML;
     }
 
-    const newTab = window.open();
-    newTab.document.write(`
-        <html>
-        <head>
-            <title>Search Results</title>
-            <style>
-                body {
-                    font-family: sans-serif;
-                    padding: 2rem;
-                }
-                .search-results-wrapper {
-                    display: ${displayMode === 'Grid' ? 'grid' : 'block'};
-                    grid-template-columns: repeat(${gridColumns}, 1fr);
-                    gap: 1rem;
-                }
-                .search-result-item {
-                    padding: 1rem;
-                    border: 1px solid #ddd;
-                    border-radius: 6px;
-                    background: #fff;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-                }
-                h3 {
-                    margin-top: 2rem;
-                }
-            </style>
-        </head>
-        <body>
-            <h2>Search Results</h2>
-            ${resultsHTML}
-        </body>
-        </html>
-    `);
-    newTab.document.close();
+    if (shouldOpenInNewPage) {
+      // Store results and config in sessionStorage
+      sessionStorage.setItem("searchResults", JSON.stringify({
+        query,
+        pageResults,
+        cmsResults,
+        selectedOption,
+        displayMode,
+        maxItems,
+        gridColumns,
+        paginationType,
+        styles
+      }));
+
+      // Redirect to results page (no refetch there)
+      window.location.href = "/search-results";
+      return;
 } else {
     resultsContainer.innerHTML = "";
 
@@ -493,6 +476,41 @@ renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, pag
     }
 
 
+
+  if (!window.location.pathname.includes("/search-results")) return;
+
+  const data = sessionStorage.getItem("searchResults");
+  if (!data) return;
+
+  const {
+    query,
+    pageResults,
+    cmsResults,
+    selectedOption,
+    displayMode,
+    maxItems,
+    gridColumns,
+    paginationType,
+    styles
+  } = JSON.parse(data);
+
+  const resultsContainer = document.getElementById("results-container") || document.body;
+
+  if ((selectedOption === "Pages" || selectedOption === "Both") && Array.isArray(pageResults) && pageResults.length > 0) {
+    const container = document.createElement("div");
+    resultsContainer.appendChild(container);
+    renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container, 1, true, styles);
+  }
+
+  if ((selectedOption === "Collection" || selectedOption === "Both") && Array.isArray(cmsResults) && cmsResults.length > 0) {
+    const container = document.createElement("div");
+    resultsContainer.appendChild(container);
+    renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container, 1, false, styles);
+  }
+
+  // Optional: clear the stored results so they're not reused on next visit
+  // sessionStorage.removeItem("searchResults");
+
         if (resultType === "Auto result") {
         let debounceTimeout;
         input.addEventListener("input", () => {
@@ -512,6 +530,9 @@ document.addEventListener('click', (event) => {
     suggestionBox.style.display = "none";
   }
 });
+
+
+    
 
 
 });   
