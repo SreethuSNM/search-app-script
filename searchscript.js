@@ -482,17 +482,18 @@ renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, pag
   const data = sessionStorage.getItem("searchResults");
   if (!data) return;
 
-  const {
-    query,
-    pageResults,
-    cmsResults,
-    selectedOption,
-    displayMode,
-    maxItems,
-    gridColumns,
-    paginationType,
-    styles
-  } = JSON.parse(data);
+({
+  query,
+  pageResults,
+  cmsResults,
+  selectedOption,
+  displayMode,
+  maxItems,
+  gridColumns,
+  paginationType,
+  styles
+} = JSON.parse(data));
+
 
   const resultsContainer = document.querySelector(".searchappresults") || document.body;
 
