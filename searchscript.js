@@ -427,7 +427,9 @@ suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
     styles
   }));
 
-  window.location.href = "/search-results";
+  // window.location.href = "/search-results";
+              window.open('/search-results');
+
   return;
 
 } else {
