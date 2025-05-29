@@ -495,18 +495,18 @@ renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, pag
 } = JSON.parse(data));
 
 
-  const resultsContainer = document.querySelector(".searchappresults") || document.body;
+  const newresultsContainer = document.querySelector(".searchappresults") || document.body;
 
 
   if ((selectedOption === "Pages" || selectedOption === "Both") && Array.isArray(pageResults) && pageResults.length > 0) {
     const container = document.createElement("div");
-    resultsContainer.appendChild(container);
+    newresultsContainer.appendChild(container);
     renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container, 1, true, styles);
   }
 
   if ((selectedOption === "Collection" || selectedOption === "Both") && Array.isArray(cmsResults) && cmsResults.length > 0) {
     const container = document.createElement("div");
-    resultsContainer.appendChild(container);
+    newresultsContainer.appendChild(container);
     renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container, 1, false, styles);
   }
 
