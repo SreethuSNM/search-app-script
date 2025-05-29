@@ -430,31 +430,40 @@ suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
   resultsHTML += container2.innerHTML;
     }
 
-   // Store query and search config in sessionStorage
-sessionStorage.setItem("searchQuery", query);
-sessionStorage.setItem("searchToken", token); // optional: if needed
-sessionStorage.setItem("searchSettings", JSON.stringify({
-  selectedOption,
-  selectedCollections,
-  selectedFieldsSearch,
-  selectedFieldsDisplay,
-  displayMode,
-  paginationType,
-  gridRows,
-  gridColumns,
-  itemsPerPage,
-  titleFontSize,
-  titleFontFamily,
-  titleColor,
-  otherFieldsColor,
-  otherFieldsFontSize,
-  borderRadius,
-  boxShadow,
-}));
-
-// Redirect to the static page
-window.location.href = "/search-results";
-
+    const newTab = window.open();
+    newTab.document.write(`
+        <html>
+        <head>
+            <title>Search Results</title>
+            <style>
+                body {
+                    font-family: sans-serif;
+                    padding: 2rem;
+                }
+                .search-results-wrapper {
+                    display: ${displayMode === 'Grid' ? 'grid' : 'block'};
+                    grid-template-columns: repeat(${gridColumns}, 1fr);
+                    gap: 1rem;
+                }
+                .search-result-item {
+                    padding: 1rem;
+                    border: 1px solid #ddd;
+                    border-radius: 6px;
+                    background: #fff;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                }
+                h3 {
+                    margin-top: 2rem;
+                }
+            </style>
+        </head>
+        <body>
+            <h2>Search Results</h2>
+            ${resultsHTML}
+        </body>
+        </html>
+    `);
+    newTab.document.close();
 } else {
     resultsContainer.innerHTML = "";
 
