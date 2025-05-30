@@ -614,23 +614,36 @@ newTab.document.write(`
             return sectionHtml;
         }
 
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('pagination-button')) {
-                const type = e.target.dataset.type; // "page" or "cms"
-                const targetPage = parseInt(e.target.dataset.page);
+        document.body.addEventListener('click', function(e) {
+    if (e.target.classList.contains('pagination-button')) {
+      const type = e.target.dataset.type; // "page" or "cms"
+      const targetPage = parseInt(e.target.dataset.page);
 
-                const results = JSON.parse(localStorage.getItem(type === "page" ? "pageResults" : "cmsResults"));
-                const displayMode = localStorage.getItem("displayMode");
-                const maxItems = parseInt(localStorage.getItem("maxItems"));
-                const gridColumns = parseInt(localStorage.getItem("gridColumns"));
-                const paginationType = localStorage.getItem("paginationType");
+      const results = JSON.parse(localStorage.getItem(type === "page" ? "pageResults" : "cmsResults"));
+      const displayMode = localStorage.getItem("displayMode");
+      const maxItems = parseInt(localStorage.getItem("maxItems"));
+      const gridColumns = parseInt(localStorage.getItem("gridColumns"));
+      const paginationType = localStorage.getItem("paginationType");
 
-                const container = document.getElementById(type + '-results');
-                container.innerHTML = ""; // clear before render
-                renderResults(results, type === "page" ? "Page Results" : "CMS Results", displayMode, maxItems, gridColumns, paginationType, container, targetPage, type === "page", {});
-            }
-        });
-        </script>
+      const container = document.getElementById(type + '-results');
+      if (!container) return;
+
+      // Re-render results for the selected page
+      renderResults(
+        results,
+        type === "page" ? "Page Results" : "CMS Results",
+        displayMode,
+        maxItems,
+        gridColumns,
+        paginationType,
+        container,
+        targetPage,
+        type === "page",
+        {}
+      );
+    }
+  });
+</script>
     </body>
     </html>
 `);
