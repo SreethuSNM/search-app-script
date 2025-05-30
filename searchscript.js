@@ -414,128 +414,56 @@ suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
             resultsContainer.innerHTML = "";
             
             if (shouldOpenInNewPage) {
-    // const container1 = document.createElement('div');
-    // const container2 = document.createElement('div');
+    const container1 = document.createElement('div');
+    const container2 = document.createElement('div');
 
     let resultsHTML = "";
 
-   if ((selectedOption === "Pages" || selectedOption === "Both") && pageResults.length > 0) {
-  const container1 = document.createElement('div');
-  container1.id = "page-results"; 
-  renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container1, 1, true, styles);
-  resultsHTML += container1.outerHTML; 
-}
-
-if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults.length > 0) {
-  const container2 = document.createElement('div');
-  container2.id = "cms-results"; 
-  renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container2, 1, false, styles);
-  resultsHTML += container2.outerHTML; 
-}
-
-
-               
-
-
-const newTab = window.open();
-newTab.document.write(`
-  <html>
-  <head>
-    <title>Search Results</title>
-    <style>
-      body {
-        font-family: sans-serif;
-        padding: 2rem;
-      }
-      .search-results-wrapper {
-        display: ${displayMode === 'Grid' ? 'grid' : 'block'};
-        grid-template-columns: repeat(${gridColumns}, 1fr);
-        gap: 1rem;
-      }
-      .search-result-item {
-        padding: 1rem;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        background: #fff;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      }
-    </style>
-  </head>
-  <body>
-    <h2>Search Results</h2>
-    <div id="page-results"></div>
-    <div id="cms-results"></div>
-
-    <script>
-      window.pageResultsData = ${JSON.stringify(pageResults)};
-      window.cmsResultsData = ${JSON.stringify(cmsResults)};
-      window.config = ${JSON.stringify({
-        displayMode,
-        maxItems,
-        gridColumns,
-        paginationType,
-        styles
-      })};
-    </script>
-  </body>
-  </html>
-`);
-newTab.document.close();
-
-// Wait for newTab DOM to load
-newTab.onload = () => {
-  const script = newTab.document.createElement('script');
-  script.type = 'text/javascript';
-  script.textContent = `
-    function renderResults(results, title, displayMode, maxItems, gridColumns, paginationType, container, currentPage = 1, isPageResult, styles) {
-      if (!Array.isArray(results) || results.length === 0) return;
-      const totalPages = Math.ceil(results.length / maxItems);
-      const startIndex = (currentPage - 1) * maxItems;
-      const endIndex = startIndex + maxItems;
-      const pagedResults = results.slice(startIndex, endIndex);
-
-      const itemsHtml = pagedResults.map(item => {
-        const titleText = item.name || item.title || "Untitled";
-        const detailUrl = isPageResult ? (item.publishedPath || item.slug || "#") : (item.detailUrl || "#");
-        return \`
-          <div class="search-result-item">
-            <a href="\${detailUrl}" target="_blank">\${titleText}</a>
-          </div>
-        \`;
-      }).join("");
-
-      let paginationHtml = "";
-      if (paginationType === "Numbered" && totalPages > 1) {
-        paginationHtml = '<div class="pagination">';
-        for (let i = 1; i <= totalPages; i++) {
-          paginationHtml += \`<button class="pagination-button" data-type="\${isPageResult ? 'page' : 'cms'}" data-page="\${i}">\${i}</button>\`;
-        }
-        paginationHtml += "</div>";
-      }
-
-      container.innerHTML = \`
-        <div class="search-results-wrapper">\${itemsHtml}</div>
-        \${paginationHtml}
-      \`;
-
-      container.querySelectorAll(".pagination-button").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const page = parseInt(btn.dataset.page);
-          renderResults(results, title, displayMode, maxItems, gridColumns, paginationType, container, page, isPageResult, styles);
-        });
-      });
+    if ((selectedOption === "Pages" || selectedOption === "Both") && pageResults.length > 0) {
+        renderResults(pageResults, "Page Results", displayMode, maxItems, gridColumns, paginationType, container1, 1, true,styles); // isPageResult = true
+  resultsHTML += container1.innerHTML;
+        
     }
 
-    renderResults(window.pageResultsData, "Page Results", window.config.displayMode, window.config.maxItems, window.config.gridColumns, window.config.paginationType, document.getElementById("page-results"), 1, true, window.config.styles);
-    renderResults(window.cmsResultsData, "CMS Results", window.config.displayMode, window.config.maxItems, window.config.gridColumns, window.config.paginationType, document.getElementById("cms-results"), 1, false, window.config.styles);
-  `;
-  newTab.document.body.appendChild(script);
-};
+    if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults.length > 0) {
+        renderResults(cmsResults, "CMS Results", displayMode, maxItems, gridColumns, paginationType, container2, 1, false,styles); // isPageResult = false
+  resultsHTML += container2.innerHTML;
+    }
 
-                newTab.document.close();
-
-
-
+    const newTab = window.open();
+    newTab.document.write(`
+        <html>
+        <head>
+            <title>Search Results</title>
+            <style>
+                body {
+                    font-family: sans-serif;
+                    padding: 2rem;
+                }
+                .search-results-wrapper {
+                    display: ${displayMode === 'Grid' ? 'grid' : 'block'};
+                    grid-template-columns: repeat(${gridColumns}, 1fr);
+                    gap: 1rem;
+                }
+                .search-result-item {
+                    padding: 1rem;
+                    border: 1px solid #ddd;
+                    border-radius: 6px;
+                    background: #fff;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                }
+                h3 {
+                    margin-top: 2rem;
+                }
+            </style>
+        </head>
+        <body>
+            <h2>Search Results</h2>
+            ${resultsHTML}
+        </body>
+        </html>
+    `);
+    newTab.document.close();
 } else {
     resultsContainer.innerHTML = "";
 
