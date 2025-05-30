@@ -531,26 +531,25 @@ newTab.document.write(`
 
                 if (displayMode === "Grid") {
                     // Grid: whole card is clickable
-                    return \`
-                        <a href="\${detailUrl}" target="_blank" style="text-decoration: none; color: inherit;">
-                            <div class="search-result-item" 
-                                style="
-                                    background: #fff;
-                                    border: 1px solid #ddd;
-                                    border-radius: \${borderRadius};
-                                    padding: 1rem;
-                                    margin-bottom: 1rem;
-                                    box-shadow: \${boxShadowStyle};
-                                ">
-                                <h4 style="font-size: \${titleFontSize}; font-family: \${titleFontFamily}; color: \${titleColor}; margin-bottom: 0.5rem;">
-                                    \${titleText}
-                                </h4>
-                                \${matchedText
-                                    ? \`<p style="color: \${otherFieldsColor}; font-size: \${otherFieldsFontSize};">\${matchedText}...</p>\`
-                                    : fieldsHtml}
-                            </div>
-                        </a>
-                    \`;
+                  return '<a href="' + detailUrl + '" target="_blank" style="text-decoration: none; color: inherit;">' +
+    '<div class="search-result-item" ' +
+    'style="' +
+        'background: #fff;' +
+        'border: 1px solid #ddd;' +
+        'border-radius: ' + borderRadius + ';' +
+        'padding: 1rem;' +
+        'margin-bottom: 1rem;' +
+        'box-shadow: ' + boxShadowStyle + ';' +
+    '">' +
+    '<h4 style="font-size: ' + titleFontSize + '; font-family: ' + titleFontFamily + '; color: ' + titleColor + '; margin-bottom: 0.5rem;">' +
+        titleText +
+    '</h4>' +
+    (matchedText
+        ? '<p style="color: ' + otherFieldsColor + '; font-size: ' + otherFieldsFontSize + ';">' + matchedText + '...</p>'
+        : fieldsHtml) +
+    '</div>' +
+'</a>';
+
                 } else {
                     // List: no card, only title is clickable
                     return \`
