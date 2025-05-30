@@ -434,12 +434,7 @@ if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults
 }
 
 
-                localStorage.setItem("pageResults", JSON.stringify(pageResults));
-localStorage.setItem("cmsResults", JSON.stringify(cmsResults));
-localStorage.setItem("displayMode", displayMode);
-localStorage.setItem("maxItems", maxItems);
-localStorage.setItem("gridColumns", gridColumns);
-localStorage.setItem("paginationType", paginationType);
+               
 
 
   const newTab = window.open();
@@ -474,6 +469,19 @@ newTab.document.write(`
         ${resultsHTML}
 
         <script>
+
+       
+  const pageResultsData = ${JSON.stringify(pageResults)};
+  const cmsResultsData = ${JSON.stringify(cmsResults)};
+  const config = {
+    displayMode: "${displayMode}",
+    maxItems: ${maxItems},
+    gridColumns: ${gridColumns},
+    paginationType: "${paginationType}",
+    styles: ${JSON.stringify(styles)}
+  };
+
+
         // Render search results with pagination
         function renderResults(results, title, displayMode, maxItems, gridColumns = 3, paginationType = "None", container, currentPage = 1, isPageResult = true, styles = {}) {
             if (!Array.isArray(results) || results.length === 0) return "";
@@ -614,35 +622,33 @@ newTab.document.write(`
             return sectionHtml;
         }
 
-        document.body.addEventListener('click', function(e) {
-    if (e.target.classList.contains('pagination-button')) {
-      const type = e.target.dataset.type; // "page" or "cms"
-      const targetPage = parseInt(e.target.dataset.page);
+       document.body.addEventListener('click', function(e) {
+  if (e.target.classList.contains('pagination-button')) {
+    const type = e.target.dataset.type; // "page" or "cms"
+    const targetPage = parseInt(e.target.dataset.page);
 
-      const results = JSON.parse(localStorage.getItem(type === "page" ? "pageResults" : "cmsResults"));
-      const displayMode = localStorage.getItem("displayMode");
-      const maxItems = parseInt(localStorage.getItem("maxItems"));
-      const gridColumns = parseInt(localStorage.getItem("gridColumns"));
-      const paginationType = localStorage.getItem("paginationType");
+    const results = type === "page" ? pageResultsData : cmsResultsData;
+    const { displayMode, maxItems, gridColumns, paginationType, styles } = config;
 
-      const container = document.getElementById(type + '-results');
-      if (!container) return;
+    const container = document.getElementById(type + '-results');
+    if (!container) return;
 
-      // Re-render results for the selected page
-      renderResults(
-        results,
-        type === "page" ? "Page Results" : "CMS Results",
-        displayMode,
-        maxItems,
-        gridColumns,
-        paginationType,
-        container,
-        targetPage,
-        type === "page",
-        {}
-      );
-    }
-  });
+    renderResults(
+      results,
+      type === "page" ? "Page Results" : "CMS Results",
+      displayMode,
+      maxItems,
+      gridColumns,
+      paginationType,
+      container,
+      targetPage,
+      type === "page",
+      styles
+    );
+  }
+});
+
+  
 </script>
     </body>
     </html>
