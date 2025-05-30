@@ -460,6 +460,26 @@ suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
         <body>
             <h2>Search Results</h2>
             ${resultsHTML}
+
+            <script>
+      // Optionally copy and paste relevant functions like handlePagination here
+      document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('pagination-button')) {
+          const targetPage = parseInt(e.target.dataset.page);
+          const type = e.target.dataset.type; // "page" or "cms"
+          const results = JSON.parse(localStorage.getItem(type === "page" ? "pageResults" : "cmsResults"));
+          const displayMode = localStorage.getItem("displayMode");
+          const maxItems = parseInt(localStorage.getItem("maxItems"));
+          const gridColumns = parseInt(localStorage.getItem("gridColumns"));
+          const paginationType = localStorage.getItem("paginationType");
+
+          const container = document.getElementById(type + '-results');
+          renderResults(results, type === "page" ? "Page Results" : "CMS Results", displayMode, maxItems, gridColumns, paginationType, container, targetPage, type === "page", {}); // styles={} here for simplicity
+        }
+      });
+
+      ${renderResults.toString()}
+    </script>
         </body>
         </html>
     `);
