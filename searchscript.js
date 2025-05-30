@@ -437,7 +437,7 @@ if ((selectedOption === "Collection" || selectedOption === "Both") && cmsResults
                
 
 
- const newTab = window.open();
+const newTab = window.open();
 newTab.document.write(`
   <html>
   <head>
@@ -459,188 +459,81 @@ newTab.document.write(`
         background: #fff;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
       }
-      h3 {
-        margin-top: 2rem;
-      }
     </style>
   </head>
   <body>
     <h2>Search Results</h2>
-    ${resultsHTML}
+    <div id="page-results"></div>
+    <div id="cms-results"></div>
 
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const pageResultsData = ${JSON.stringify(pageResults)};
-        const cmsResultsData = ${JSON.stringify(cmsResults)};
-        const config = {
-          displayMode: "${displayMode}",
-          maxItems: ${maxItems},
-          gridColumns: ${gridColumns},
-          paginationType: "${paginationType}",
-          styles: ${JSON.stringify(styles)}
-        };
-
-        function renderResults(results, title, displayMode, maxItems, gridColumns = 3, paginationType = "None", container, currentPage = 1, isPageResult = true, styles = {}) {
-          if (!Array.isArray(results) || results.length === 0) return "";
-          const totalPages = maxItems ? Math.ceil(results.length / maxItems) : 1;
-          const startIndex = maxItems ? (currentPage - 1) * maxItems : 0;
-          const endIndex = maxItems ? startIndex + maxItems : results.length;
-          const pagedResults = results.slice(startIndex, endIndex);
-
-          const {
-            titleFontSize = "16px",
-            titleFontFamily = "Arial",
-            titleColor = "#000",
-            borderRadius = "6px",
-            otherFieldsColor = "#333",
-            otherFieldsFontSize = "14px",
-            boxShadow = true,
-          } = styles;
-
-          const itemsHtml = pagedResults.map(item => {
-            const titleText = item.name || item.title || "Untitled";
-            const detailUrl = isPageResult
-              ? (item.publishedPath || item.slug || "#")
-              : (item.detailUrl || "#");
-            const matchedText = item.matchedText?.slice(0, 200) || "";
-
-            const fieldsHtml = Object.entries(item)
-              .filter(([key]) => key !== "name" && key !== "title" && key !== "detailUrl")
-              .map(([key, value]) => {
-                if (typeof value === 'string' && value.match(/^\\d{4}-\\d{2}-\\d{2}T/)) {
-                  value = new Date(value).toLocaleString();
-                }
-
-                if (typeof value === 'object' && value !== null) {
-                  const imageUrl = (Array.isArray(value) && value[0]?.url)
-                    || value.url || value.src || value.href;
-
-                  if (imageUrl) {
-                    const imageStyle = displayMode === 'Grid'
-                      ? 'max-width: 100%;'
-                      : 'max-width: 50%;';
-
-                    return \`<p style="color: \${otherFieldsColor}; font-size: \${otherFieldsFontSize};">
-                      <img src="\${imageUrl}" alt="\${key}" class="item-image" style="\${imageStyle} border-radius: 4px;" />
-                    </p>\`;
-                  }
-
-                  return \`<p style="color: \${otherFieldsColor}; font-size: \${otherFieldsFontSize};">\${JSON.stringify(value)}</p>\`;
-                }
-
-                return \`<p style="color: \${otherFieldsColor}; font-size: \${otherFieldsFontSize};">\${value}</p>\`;
-              }).join("");
-
-            const boxShadowStyle = boxShadow ? "0 2px 6px rgba(255, 0, 0, 0.4)" : "none";
-
-            if (displayMode === "Grid") {
-              return '<a href="' + detailUrl + '" target="_blank" style="text-decoration: none; color: inherit;">' +
-                '<div class="search-result-item" ' +
-                'style="' +
-                  'background: #fff;' +
-                  'border: 1px solid #ddd;' +
-                  'border-radius: ' + borderRadius + ';' +
-                  'padding: 1rem;' +
-                  'margin-bottom: 1rem;' +
-                  'box-shadow: ' + boxShadowStyle + ';' +
-                '">' +
-                '<h4 style="font-size: ' + titleFontSize + '; font-family: ' + titleFontFamily + '; color: ' + titleColor + '; margin-bottom: 0.5rem;">' +
-                  titleText +
-                '</h4>' +
-                (matchedText
-                  ? '<p style="color: ' + otherFieldsColor + '; font-size: ' + otherFieldsFontSize + ';">' + matchedText + '...</p>'
-                  : fieldsHtml) +
-              '</div>' +
-              '</a>';
-            } else {
-              return \`
-                <div class="search-result-item" style="margin-bottom: 1rem; padding-left: 1rem;">
-                  <a href="\${detailUrl}" target="_blank" style="font-size: \${titleFontSize}; font-family: \${titleFontFamily}; color: \${titleColor}; font-weight: bold; text-decoration: underline;">
-                    \${titleText}
-                  </a>
-                  \${matchedText
-                    ? \`<p style="color: \${otherFieldsColor}; font-size: \${otherFieldsFontSize};">\${matchedText}...</p>\`
-                    : fieldsHtml}
-                </div>
-              \`;
-            }
-          }).join("");
-
-          let paginationHtml = "";
-          if (paginationType === "Numbered" && totalPages > 1) {
-            paginationHtml = \`<div class="pagination" style="margin-top: 1rem;">\`;
-            for (let i = 1; i <= totalPages; i++) {
-              paginationHtml += \`<button class="pagination-button" data-type="\${isPageResult ? 'page' : 'cms'}" data-page="\${i}" style="margin: 0 4px; padding: 4px 8px;">\${i}</button>\`;
-            }
-            paginationHtml += \`</div>\`;
-          }
-
-          if (paginationType === "Load More" && endIndex < results.length) {
-            paginationHtml += \`<div style="text-align:center;"><button class="load-more-button" style="margin-top:1rem;">Load More</button></div>\`;
-          }
-
-          const sectionHtml = \`
-            <section style="margin-top: 2rem;">
-              <div class="search-results-wrapper" style="display: \${displayMode === 'Grid' ? 'grid' : 'block'}; grid-template-columns: repeat(\${gridColumns}, 1fr); gap: 1rem;">
-                \${itemsHtml}
-              </div>
-              \${paginationHtml}
-            </section>\`;
-
-          if (container) {
-            container.innerHTML = sectionHtml;
-
-            if (paginationType === "Numbered") {
-              container.querySelectorAll('.pagination-button').forEach(btn => {
-                btn.addEventListener('click', () => {
-                  const page = parseInt(btn.getAttribute('data-page'));
-                  renderResults(results, title, displayMode, maxItems, gridColumns, paginationType, container, page, isPageResult, styles);
-                });
-              });
-            }
-
-            if (paginationType === "Load More") {
-              const loadBtn = container.querySelector('.load-more-button');
-              if (loadBtn) {
-                loadBtn.addEventListener('click', () => {
-                  renderResults(results, title, displayMode, endIndex + maxItems, gridColumns, paginationType, container, 1, isPageResult, styles);
-                });
-              }
-            }
-          }
-
-          return sectionHtml;
-        }
-
-        document.body.addEventListener('click', function (e) {
-          if (e.target.classList.contains('pagination-button')) {
-            const type = e.target.dataset.type;
-            const targetPage = parseInt(e.target.dataset.page);
-            const results = type === "page" ? pageResultsData : cmsResultsData;
-            const container = document.getElementById(type + '-results');
-
-            if (!container) return;
-
-            renderResults(
-              results,
-              type === "page" ? "Page Results" : "CMS Results",
-              config.displayMode,
-              config.maxItems,
-              config.gridColumns,
-              config.paginationType,
-              container,
-              targetPage,
-              type === "page",
-              config.styles
-            );
-          }
-        });
-      });
+      window.pageResultsData = ${JSON.stringify(pageResults)};
+      window.cmsResultsData = ${JSON.stringify(cmsResults)};
+      window.config = ${JSON.stringify({
+        displayMode,
+        maxItems,
+        gridColumns,
+        paginationType,
+        styles
+      })};
     </script>
   </body>
   </html>
 `);
 newTab.document.close();
+
+// Wait for newTab DOM to load
+newTab.onload = () => {
+  const script = newTab.document.createElement('script');
+  script.type = 'text/javascript';
+  script.textContent = `
+    function renderResults(results, title, displayMode, maxItems, gridColumns, paginationType, container, currentPage = 1, isPageResult, styles) {
+      if (!Array.isArray(results) || results.length === 0) return;
+      const totalPages = Math.ceil(results.length / maxItems);
+      const startIndex = (currentPage - 1) * maxItems;
+      const endIndex = startIndex + maxItems;
+      const pagedResults = results.slice(startIndex, endIndex);
+
+      const itemsHtml = pagedResults.map(item => {
+        const titleText = item.name || item.title || "Untitled";
+        const detailUrl = isPageResult ? (item.publishedPath || item.slug || "#") : (item.detailUrl || "#");
+        return \`
+          <div class="search-result-item">
+            <a href="\${detailUrl}" target="_blank">\${titleText}</a>
+          </div>
+        \`;
+      }).join("");
+
+      let paginationHtml = "";
+      if (paginationType === "Numbered" && totalPages > 1) {
+        paginationHtml = '<div class="pagination">';
+        for (let i = 1; i <= totalPages; i++) {
+          paginationHtml += \`<button class="pagination-button" data-type="\${isPageResult ? 'page' : 'cms'}" data-page="\${i}">\${i}</button>\`;
+        }
+        paginationHtml += "</div>";
+      }
+
+      container.innerHTML = \`
+        <div class="search-results-wrapper">\${itemsHtml}</div>
+        \${paginationHtml}
+      \`;
+
+      container.querySelectorAll(".pagination-button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const page = parseInt(btn.dataset.page);
+          renderResults(results, title, displayMode, maxItems, gridColumns, paginationType, container, page, isPageResult, styles);
+        });
+      });
+    }
+
+    renderResults(window.pageResultsData, "Page Results", window.config.displayMode, window.config.maxItems, window.config.gridColumns, window.config.paginationType, document.getElementById("page-results"), 1, true, window.config.styles);
+    renderResults(window.cmsResultsData, "CMS Results", window.config.displayMode, window.config.maxItems, window.config.gridColumns, window.config.paginationType, document.getElementById("cms-results"), 1, false, window.config.styles);
+  `;
+  newTab.document.body.appendChild(script);
+};
+
+                newTab.document.close();
+
 
 
 } else {
