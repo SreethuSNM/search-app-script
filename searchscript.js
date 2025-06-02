@@ -1,4 +1,4 @@
-<script>
+
   
   // Generate or get visitor ID
 async function getOrCreateVisitorId() {
@@ -212,4 +212,3 @@ async function getVisitorSessionToken() {
       }
     });
   });
-</script>
