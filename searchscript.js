@@ -1,3 +1,4 @@
+<script>
 
   
   // Generate or get visitor ID
@@ -68,7 +69,7 @@ async function getVisitorSessionToken() {
 
     if (!form || !input || !searchConfigDiv) return;
 
-     if (!form || !input || !resultsContainer) {
+     if (!form || !input) {
         console.warn("Search form or elements not found.");
         return;
     }
@@ -88,25 +89,12 @@ async function getVisitorSessionToken() {
 
     // Hide submit button if Auto result
     const submitButton = form.querySelector("input[type='submit']");
+    
     if (submitButton) {
-  submitButton.addEventListener('click', () => {
-    // Add press animation effect
-    submitButton.style.transition = 'transform 0.1s ease, box-shadow 0.1s ease';
-    submitButton.style.transform = 'scale(0.95)';
-    submitButton.style.boxShadow = 'inset 0 0 5px rgba(0,0,0,0.2)';
-
-    // Revert the button after a short delay
-    setTimeout(() => {
-      submitButton.style.transform = 'scale(1)';
-      submitButton.style.boxShadow = '';
-    }, 150);
-  });
+   submitButton.style.display = "none";
 }
 
-    if (resultType === "Auto result" && submitButton) {
-      submitButton.style.display = "none";
-    }
-
+    
     // === Search Bar Display Mode ===
     if (searchBarType === "Icon") {
       // Hide form, show icon
@@ -212,12 +200,6 @@ async function getVisitorSessionToken() {
       }
     });
 
-    // === Form Submit Redirect ===
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      const query = encodeURIComponent(input.value.trim());
-      if (query) {
-        window.location.href = `/search-results?q=${query}`;
-      }
-    });
+  
   });
+</script>
