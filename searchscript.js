@@ -68,6 +68,15 @@ async function getVisitorSessionToken() {
 
     if (!form || !input || !searchConfigDiv) return;
 
+     if (!form || !input || !resultsContainer) {
+        console.warn("Search form or elements not found.");
+        return;
+    }
+
+    form.removeAttribute("action");
+    form.setAttribute("action", "#");
+
+
     // === Result Type Behavior ===
     const resultType = searchConfigDiv.getAttribute('data-result-type') || "Click on search";
     const searchBarType = searchConfigDiv.getAttribute('data-search-bar');
