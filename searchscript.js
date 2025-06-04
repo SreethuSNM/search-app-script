@@ -61,11 +61,14 @@ async function getVisitorSessionToken() {
     
     const form = document.querySelector(".w-form, #search-form");
     const input = document.querySelector("input[name='query']");
+    const resultsContainer = document.querySelector(".searchresults");
     const searchConfigDiv = document.querySelector("#search-config");
+    const submitButton = form.querySelector("input[type='submit']");
     
+   
+   submitButton.style.display = "none";
+   resultsContainer.style.display = "none";
 
-  
-    
 
     if (!form || !input || !searchConfigDiv) return;
 
@@ -87,13 +90,7 @@ async function getVisitorSessionToken() {
       const collectionsParam = encodeURIComponent(JSON.stringify(selectedCollections));
     const fieldsSearchParam = encodeURIComponent(JSON.stringify(selectedFieldsSearch));
 
-    // Hide submit button if Auto result
-    const submitButton = form.querySelector("input[type='submit']");
-    
-    if (submitButton) {
-   submitButton.style.display = "none";
-}
-
+   
     
     // === Search Bar Display Mode ===
     if (searchBarType === "Icon") {
