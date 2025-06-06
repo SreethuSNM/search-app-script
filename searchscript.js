@@ -95,14 +95,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const iconContainer = document.querySelector(".searchiconcontainer");
     if (iconContainer) iconContainer.style.display = "none";
   }
-});
+
 
   
   function runSiteSearchScript() {
   console.log("Running Site Search logic");
   
 
-  console.log("Running Collection Filtering logic");
+
     
     if (window.location.pathname === '/search-app-results') return;
     
