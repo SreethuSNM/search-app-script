@@ -37,25 +37,28 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // === Event Handling ===
-  const radios = document.querySelectorAll('input[name="searchOption"]');
-  radios.forEach((radio) => {
+  
+
+  radios.forEach(radio => {
     radio.addEventListener("change", () => {
       if (!radio.checked) return;
+
       if (radio.id === "radio") {
-        runCollectionFilteringScript(); // ✅ Script A
+        runCollectionFilteringScript();
       } else if (radio.id === "radio-2") {
-        runSiteSearchScript(); // ✅ Script B
+        runSiteSearchScript();
       }
     });
   });
 
-  // === Run correct script on load if pre-selected ===
+  // Run on load if pre-selected
   const selected = document.querySelector('input[name="searchOption"]:checked');
   if (selected?.id === "radio") {
     runCollectionFilteringScript();
   } else if (selected?.id === "radio-2") {
     runSiteSearchScript();
   }
+});
   
    const form = document.querySelector(".w-form, #search-form");
   const input = document.querySelector("input[name='query']");
