@@ -1,4 +1,4 @@
-<script>
+
 document.addEventListener("DOMContentLoaded", () => {
   // === Setup & Styling ===
   const radio1 = document.getElementById('radio');
@@ -484,4 +484,4 @@ console.log("Comparing:", `"${cleanItem}"`, "vs", `"${cleanTarget}"`);
   
   
 });
-</script>
+
