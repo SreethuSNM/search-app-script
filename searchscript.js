@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   console.log("Running Collection Filtering logic");
     
-    if (window.location.pathname === '/search-results') return;
+    if (window.location.pathname === '/search-app-results') return;
     
     
   
@@ -261,7 +261,7 @@ async function getVisitorSessionToken() {
           suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
             item.addEventListener('click', () => {
               const selected = item.textContent;
-              window.location.href = `/search-results?q=${encodeURIComponent(selected)}`;
+              window.location.href = `/search-app-results?q=${encodeURIComponent(selected)}`;
             });
           });
 
