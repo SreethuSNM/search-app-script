@@ -1,4 +1,6 @@
-document.addEventListener("DOMContentLoaded", () => {
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
   // === Setup & Styling ===
   const radio1 = document.getElementById('radio');
   const labelSpan = radio1?.parentElement.querySelector('.w-form-label');
@@ -96,13 +98,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (iconContainer) iconContainer.style.display = "none";
   }
 
-
   
   function runSiteSearchScript() {
   console.log("Running Site Search logic");
   
 
-
+ 
     
     if (window.location.pathname === '/search-app-results') return;
     
@@ -476,4 +477,5 @@ console.log("Comparing:", `"${cleanItem}"`, "vs", `"${cleanTarget}"`);
   
   
 });
-
+  
+  </script>
