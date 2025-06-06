@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", () => {
   // === Setup & Styling ===
   const radio1 = document.getElementById('radio');
@@ -9,8 +8,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const labelSpan2 = radio2?.parentElement.querySelector('.w-form-label');
   if (labelSpan2) labelSpan2.textContent = 'Site search';
 
-  // Set same name for grouping
+  // Get radios
   const radioInputs = document.querySelectorAll('.radiocontainerstyle input[type="radio"]');
+
+  // Set same name for grouping
   radioInputs.forEach(input => input.setAttribute('name', 'searchOption'));
 
   // Style container
@@ -37,9 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // === Event Handling ===
-  
-
-  radios.forEach(radio => {
+  radioInputs.forEach(radio => {
     radio.addEventListener("change", () => {
       if (!radio.checked) return;
 
@@ -58,44 +57,46 @@ document.addEventListener("DOMContentLoaded", () => {
   } else if (selected?.id === "radio-2") {
     runSiteSearchScript();
   }
-});
-  
-   const form = document.querySelector(".w-form, #search-form");
+
+  // === Search form & input ===
+  const form = document.querySelector(".w-form, #search-form");
   const input = document.querySelector("input[name='query']");
-     const searchConfigDiv = document.querySelector("#search-config");
-    const submitButton = form.querySelector("input[type='submit']");
-     const searchBarType = searchConfigDiv.getAttribute("data-search-bar");
-  
-   input.style.borderRadius = "8px";
-  form.removeAttribute("action");
-  form.setAttribute("action", "#");
+  const searchConfigDiv = document.querySelector("#search-config");
+  const submitButton = form?.querySelector("input[type='submit']");
+  const searchBarType = searchConfigDiv?.getAttribute("data-search-bar");
 
-    if (submitButton) submitButton.style.display = "none";
+  if(input) input.style.borderRadius = "8px";
+  if(form) {
+    form.removeAttribute("action");
+    form.setAttribute("action", "#");
+  }
 
-     // === Search Bar Display Mode ===
-    if (searchBarType === "Icon") {
-      // Hide form, show icon
-      form.style.display = "none";
-      const iconContainer = document.querySelector(".searchiconcontainer");
-      if (!iconContainer) {
-        console.error("'.searchiconcontainer' element not found.");
-        return;
-      }
+  if (submitButton) submitButton.style.display = "none";
 
-      iconContainer.style.cursor = "pointer";
-      iconContainer.style.display = ""; // Show icon
+  if (searchBarType === "Icon") {
+    if(form) form.style.display = "none";
 
-      iconContainer.addEventListener("click", () => {
-        form.style.display = "";
-        iconContainer.style.display = "none";
-        input.focus();
-      });
-    } else {
-      // Expanded: show form, hide icon if exists
-      form.style.display = "";
-      const iconContainer = document.querySelector(".searchiconcontainer");
-      if (iconContainer) iconContainer.style.display = "none";
+    const iconContainer = document.querySelector(".searchiconcontainer");
+    if (!iconContainer) {
+      console.error("'.searchiconcontainer' element not found.");
+      return;
     }
+
+    iconContainer.style.cursor = "pointer";
+    iconContainer.style.display = ""; // Show icon
+
+    iconContainer.addEventListener("click", () => {
+      if(form) form.style.display = "";
+      iconContainer.style.display = "none";
+      if(input) input.focus();
+    });
+  } else {
+    if(form) form.style.display = "";
+    const iconContainer = document.querySelector(".searchiconcontainer");
+    if (iconContainer) iconContainer.style.display = "none";
+  }
+});
+
   
   function runSiteSearchScript() {
   console.log("Running Site Search logic");
@@ -116,19 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
    resultsContainer.style.display = "none";
 
 
-    if (!form || !input || !searchConfigDiv) return;
-
-     if (!form || !input) {
-        console.warn("Search form or elements not found.");
-    
-       
-       
-       return;
-    }
-
-    form.removeAttribute("action");
-    form.setAttribute("action", "#");
-
+   
 
     // === Result Type Behavior ===
     const resultType = searchConfigDiv.getAttribute('data-result-type') || "Click on search";
