@@ -364,14 +364,14 @@ console.log('All unique data-* attributes:', Array.from(filterAttrs));
     }
 
    .searchresults {
-  max-height: 80vh !important;
+  max-height: 100vh !important;
   overflow-y: auto !important;
   overflow-x: hidden;
-  padding: 10px;
+  padding: 10px 10px 30px 10px;
   margin-top: 10px;
   
   display: grid !important;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   box-sizing: border-box;
 }
@@ -413,9 +413,9 @@ console.log('All unique data-* attributes:', Array.from(filterAttrs));
     }
 
     pageItems.forEach(item => {
-     const wrapper = document.createElement("div");
-  wrapper.appendChild(item);
-  searchResults.appendChild(wrapper);
+    
+        searchResults.appendChild(item);
+
     });
 
     const paginationContainer = document.createElement("div");
