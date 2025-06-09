@@ -126,17 +126,19 @@ style.textContent = `
     z-index: 1000;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     font-family: Arial, sans-serif !important;
-    font-size: 18px !important;
+    font-size: 12px !important;
     color: black !important;
+    text-transform: capitalize !important;
   }
   .searchsuggestionbox .suggestion-item {
     padding: 8px;
     cursor: pointer;
     color: black !important;
-    font-size: 18px !important;
+    font-size: 12px !important;
     font-family: Arial, sans-serif !important;
     background: white !important;
     border: none !important;
+    text-transform: capitalize !important;
   }
   .searchsuggestionbox .suggestion-item:hover {
     background-color: #eee !important;
