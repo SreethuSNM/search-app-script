@@ -144,58 +144,113 @@ async function getVisitorSessionToken() {
     `;
     document.head.appendChild(style);
     // === Suggestion Box ===
-    let suggestionBox = document.querySelector(".searchsuggestionbox");
-    if (!suggestionBox) {
-      suggestionBox = document.createElement("div");
-      suggestionBox.className = "searchsuggestionbox";
-      input.parentNode.style.position = "relative";
-      input.parentNode.appendChild(suggestionBox);
-    }
+    // let suggestionBox = document.querySelector(".searchsuggestionbox");
+    // if (!suggestionBox) {
+    //   suggestionBox = document.createElement("div");
+    //   suggestionBox.className = "searchsuggestionbox";
+    //   input.parentNode.style.position = "relative";
+    //   input.parentNode.appendChild(suggestionBox);
+    // }
 
-    input.addEventListener("input", async () => {
-      const query = input.value.trim();
-      if (!query) {
-        suggestionBox.style.display = "none";
-        suggestionBox.innerHTML = "";
-        return;
-      }
+    // input.addEventListener("input", async () => {
+    //   const query = input.value.trim();
+    //   if (!query) {
+    //     suggestionBox.style.display = "none";
+    //     suggestionBox.innerHTML = "";
+    //     return;
+    //   }
 
-      try {
+    //   try {
       
        
         
-        const siteName = window.location.hostname.replace(/^www\./, '').split('.')[0];
+    //     const siteName = window.location.hostname.replace(/^www\./, '').split('.')[0];
 
-        const url = `https://search-server.long-rain-28bb.workers.dev/api/suggestions?query=${encodeURIComponent(query)}&siteName=${encodeURIComponent(siteName)}&collections=${collectionsParam}&searchFields=${fieldsSearchParam}`;
-        const response = await fetch(url);
+    //     const url = `https://search-server.long-rain-28bb.workers.dev/api/suggestions?query=${encodeURIComponent(query)}&siteName=${encodeURIComponent(siteName)}&collections=${collectionsParam}&searchFields=${fieldsSearchParam}`;
+    //     const response = await fetch(url);
 
-        if (!response.ok) throw new Error("Network response was not ok");
+    //     if (!response.ok) throw new Error("Network response was not ok");
 
-        const data = await response.json();
+    //     const data = await response.json();
 
-        if (data.suggestions && data.suggestions.length > 0) {
-          suggestionBox.style.display = "block";
-          suggestionBox.innerHTML = data.suggestions
-            .map(s => `<div class="suggestion-item">${s}</div>`)
-            .join("");
+    //     if (data.suggestions && data.suggestions.length > 0) {
+    //       suggestionBox.style.display = "block";
+    //       suggestionBox.innerHTML = data.suggestions
+    //         .map(s => `<div class="suggestion-item">${s}</div>`)
+    //         .join("");
 
-          suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
-            item.addEventListener('click', () => {
-              const selected = item.textContent;
-              window.location.href = `/search-results?q=${encodeURIComponent(selected)}`;
-            });
-          });
+    //       suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
+    //         item.addEventListener('click', () => {
+    //           const selected = item.textContent;
+    //           window.location.href = `/search-results?q=${encodeURIComponent(selected)}`;
+    //         });
+    //       });
 
-        } else {
-          suggestionBox.style.display = "none";
-          suggestionBox.innerHTML = "";
-        }
-      } catch (err) {
-        console.error("Failed to fetch suggestions:", err);
-        suggestionBox.style.display = "none";
-        suggestionBox.innerHTML = "";
-      }
-    });
+    //     } else {
+    //       suggestionBox.style.display = "none";
+    //       suggestionBox.innerHTML = "";
+    //     }
+    //   } catch (err) {
+    //     console.error("Failed to fetch suggestions:", err);
+    //     suggestionBox.style.display = "none";
+    //     suggestionBox.innerHTML = "";
+    //   }
+    // });
+
+    let suggestionBox = document.querySelector(".searchsuggestionbox");
+
+if (!suggestionBox) {
+  suggestionBox = document.createElement("div");
+  suggestionBox.className = "searchsuggestionbox";
+  input.parentNode.style.position = "relative";
+  input.parentNode.appendChild(suggestionBox);
+}
+
+input.addEventListener("input", async () => {
+  const query = input.value.trim();
+  if (!query) {
+    suggestionBox.style.display = "none";
+    suggestionBox.innerHTML = "";
+    return;
+  }
+
+  try {
+    const siteName = window.location.hostname.replace(/^www\./, '').split('.')[0];
+    const url = `https://search-server.long-rain-28bb.workers.dev/api/suggestions?query=${encodeURIComponent(query)}&siteName=${encodeURIComponent(siteName)}&collections=${collectionsParam}&searchFields=${fieldsSearchParam}`;
+    
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Network response was not ok");
+
+    const data = await response.json();
+
+    if (data.suggestions && data.suggestions.length > 0) {
+      suggestionBox.style.display = "block";
+      suggestionBox.innerHTML = data.suggestions
+        .map((s, i) => {
+          const url = data.detailUrls?.[i] || `/search-results?q=${encodeURIComponent(s)}`;
+          return `<div class="suggestion-item" data-url="${url}">${s}</div>`;
+        })
+        .join("");
+
+      suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const url = item.getAttribute("data-url");
+          window.location.href = url;
+        });
+      });
+
+    } else {
+      suggestionBox.style.display = "none";
+      suggestionBox.innerHTML = "";
+    }
+
+  } catch (err) {
+    console.error("Failed to fetch suggestions:", err);
+    suggestionBox.style.display = "none";
+    suggestionBox.innerHTML = "";
+  }
+});
+
 
   
   });
