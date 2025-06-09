@@ -364,17 +364,26 @@ console.log('All unique data-* attributes:', Array.from(filterAttrs));
     }
 
    .searchresults {
-  max-height: 500px !important;
-  overflow-y: auto !important;
-  overflow-x: hidden;
-  padding: 10px 10px 30px 10px;
-  margin-top: 10px;
-  
-  display: grid !important;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 5px;
-  box-sizing: border-box;
-}
+    width: 100%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 10px;
+    
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+
+    max-height: 80vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    box-sizing: border-box;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  .searchresults > * {
+    overflow: visible;
+  }
 
   `;
   document.head.appendChild(style);
