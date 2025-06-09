@@ -110,84 +110,35 @@ async function getVisitorSessionToken() {
 
     
     // Inject styles dynamically for suggestions
-    const style = document.createElement("style");
-    style.textContent = `
-     .searchsuggestionbox {
-  position: absolute;
-  top: 100%;           /* Places it directly below the input */
-  left: 0;
-  background: white;
-  border: 1px solid #ccc;
-  max-height: 200px;
-  overflow-y: auto;
-  width: 100%;
-  display: none;
-  z-index: 1000;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-      .suggestion-item {
-        padding: 8px;
-        cursor: pointer;
-      }
-      .suggestion-item:hover {
-        background-color: #eee;
-      }
-    `;
-    document.head.appendChild(style);
-    // === Suggestion Box ===
-    // let suggestionBox = document.querySelector(".searchsuggestionbox");
-    // if (!suggestionBox) {
-    //   suggestionBox = document.createElement("div");
-    //   suggestionBox.className = "searchsuggestionbox";
-    //   input.parentNode.style.position = "relative";
-    //   input.parentNode.appendChild(suggestionBox);
-    // }
+   
+const style = document.createElement("style");
+style.textContent = `
+  .searchsuggestionbox {
+    position: absolute;
+    top: 100%;           /* Places it directly below the input */
+    left: 0;
+    background: white;
+    border: 1px solid #ccc;
+    max-height: 200px;
+    overflow-y: auto;
+    width: 100%;
+    display: none;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  .suggestion-item {
+    padding: 8px;
+    cursor: pointer;
+    color: black;
+    font-size: 18px;
+  }
+  .suggestion-item:hover {
+    background-color: #eee;
+  }
+`;
+document.head.appendChild(style);
 
-    // input.addEventListener("input", async () => {
-    //   const query = input.value.trim();
-    //   if (!query) {
-    //     suggestionBox.style.display = "none";
-    //     suggestionBox.innerHTML = "";
-    //     return;
-    //   }
-
-    //   try {
-      
-       
-        
-    //     const siteName = window.location.hostname.replace(/^www\./, '').split('.')[0];
-
-    //     const url = `https://search-server.long-rain-28bb.workers.dev/api/suggestions?query=${encodeURIComponent(query)}&siteName=${encodeURIComponent(siteName)}&collections=${collectionsParam}&searchFields=${fieldsSearchParam}`;
-    //     const response = await fetch(url);
-
-    //     if (!response.ok) throw new Error("Network response was not ok");
-
-    //     const data = await response.json();
-
-    //     if (data.suggestions && data.suggestions.length > 0) {
-    //       suggestionBox.style.display = "block";
-    //       suggestionBox.innerHTML = data.suggestions
-    //         .map(s => `<div class="suggestion-item">${s}</div>`)
-    //         .join("");
-
-    //       suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
-    //         item.addEventListener('click', () => {
-    //           const selected = item.textContent;
-    //           window.location.href = `/search-results?q=${encodeURIComponent(selected)}`;
-    //         });
-    //       });
-
-    //     } else {
-    //       suggestionBox.style.display = "none";
-    //       suggestionBox.innerHTML = "";
-    //     }
-    //   } catch (err) {
-    //     console.error("Failed to fetch suggestions:", err);
-    //     suggestionBox.style.display = "none";
-    //     suggestionBox.innerHTML = "";
-    //   }
-    // });
-
+    
     let suggestionBox = document.querySelector(".searchsuggestionbox");
 
 if (!suggestionBox) {
