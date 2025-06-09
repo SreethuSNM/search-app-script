@@ -1,7 +1,4 @@
-
-
-  
-  // Generate or get visitor ID
+ // Generate or get visitor ID
 async function getOrCreateVisitorId() {
     let visitorId = localStorage.getItem('visitorId');
     if (!visitorId) {
@@ -57,28 +54,22 @@ async function getVisitorSessionToken() {
 
   document.addEventListener('DOMContentLoaded', function () {
     
-    if (window.location.pathname === '/search-results') return;
-    
-    const form = document.querySelector(".w-form, #search-form");
-    const input = document.querySelector("input[name='query']");
-    
-    const searchConfigDiv = document.querySelector("#search-config");
-    const submitButton = form.querySelector("input[type='submit']");
+    if (window.location.pathname === '/search-app-results') return;
     
    
-   submitButton.style.display = "none";
-  
+    const input = document.getElementById("field");
+
+    
+     if(input) input.style.borderRadius = "8px";
+    
+    const searchConfigDiv = document.querySelector("#search-config");
+    
+    
+   
+   
 
 
-    if (!form || !input || !searchConfigDiv) return;
-
-     if (!form || !input) {
-        console.warn("Search form or elements not found.");
-        return;
-    }
-
-    form.removeAttribute("action");
-    form.setAttribute("action", "#");
+   
 
 
     // === Result Type Behavior ===
@@ -95,7 +86,7 @@ async function getVisitorSessionToken() {
     // === Search Bar Display Mode ===
     if (searchBarType === "Icon") {
       // Hide form, show icon
-      form.style.display = "none";
+      input.style.display = "none";
       const iconContainer = document.querySelector(".searchiconcontainer");
       if (!iconContainer) {
         console.error("'.searchiconcontainer' element not found.");
@@ -106,13 +97,13 @@ async function getVisitorSessionToken() {
       iconContainer.style.display = ""; // Show icon
 
       iconContainer.addEventListener("click", () => {
-        form.style.display = "";
+        input.style.display = "";
         iconContainer.style.display = "none";
         input.focus();
       });
     } else {
       // Expanded: show form, hide icon if exists
-      form.style.display = "";
+      input.style.display = "";
       const iconContainer = document.querySelector(".searchiconcontainer");
       if (iconContainer) iconContainer.style.display = "none";
     }
@@ -238,6 +229,29 @@ input.addEventListener("input", async () => {
           window.location.href = url;
         });
       });
+      
+    
+// "View All" link
+const viewAllLink = document.createElement("div");
+viewAllLink.className = "view-all-link";
+viewAllLink.textContent = "View All";
+viewAllLink.style.cssText = `
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+  color: #0073e6;
+  cursor: pointer;
+  border-top: 1px solid #eee;
+  background: #fafafa;
+`;
+viewAllLink.addEventListener("click", () => {
+  window.location.href = `/search-app-results?q=${encodeURIComponent(query)}`;
+});
+
+// Append View All link inside the suggestion box
+suggestionBox.appendChild(viewAllLink);
+suggestionBox.style.display = "block";
+
 
     } else {
       suggestionBox.style.display = "none";
