@@ -305,11 +305,22 @@ const targetCollection = searchConfigDiv.getAttribute("data-target-collection");
   let currentPage = 1;
   let matchedClones = [];
 
-  // Dynamically collect all data-* attributes from first item
-  const filterAttrs = new Set();
-  allItems[0]?.getAttributeNames().forEach(attr => {
-    if (attr.startsWith("data-")) filterAttrs.add(attr);
+  // // Dynamically collect all data-* attributes from first item
+  // const filterAttrs = new Set();
+  // allItems[0]?.getAttributeNames().forEach(attr => {
+  //   if (attr.startsWith("data-")) filterAttrs.add(attr);
+  // });
+
+  / Loop through all elements and collect unique data-* attributes
+allItems.forEach(el => {
+  el.getAttributeNames().forEach(attr => {
+    if (attr.startsWith('data-')) {
+      filterAttrs.add(attr);
+    }
   });
+});
+
+console.log('All unique data-* attributes:', Array.from(filterAttrs));
 
   // Inject CSS styles dynamically
   const style = document.createElement("style");
