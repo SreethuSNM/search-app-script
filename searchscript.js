@@ -61,13 +61,13 @@ async function getVisitorSessionToken() {
     
     const form = document.querySelector(".w-form, #search-form");
     const input = document.querySelector("input[name='query']");
-    const resultsContainer = document.querySelector(".searchresults");
+    
     const searchConfigDiv = document.querySelector("#search-config");
     const submitButton = form.querySelector("input[type='submit']");
     
    
    submitButton.style.display = "none";
-   resultsContainer.style.display = "none";
+  
 
 
     if (!form || !input || !searchConfigDiv) return;
