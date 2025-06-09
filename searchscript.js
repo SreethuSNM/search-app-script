@@ -364,9 +364,12 @@ console.log('All unique data-* attributes:', Array.from(filterAttrs));
     }
 
     .searchresults {
-    max-height: 400px;
-    overflow-y: auto;
-    padding-right: 8px;
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    padding-right: 10px;
+    margin-top: 10px;
+    display: block;
   }
   `;
   document.head.appendChild(style);
