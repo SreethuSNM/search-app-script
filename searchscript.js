@@ -110,10 +110,22 @@ async function getVisitorSessionToken() {
 
     
     // Inject styles dynamically for suggestions
+
+   function sanitizeText(text) {
+  const div = document.createElement("div");
+  div.innerHTML = text;
+  return div.textContent || div.innerText || "";
+}
+
+function toTitleCase(str) {
+  return str.replace(/\w\S*/g, (txt) =>
+    txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase()
+  );
+}
    
 const style = document.createElement("style");
 style.textContent = `
-  .searchsuggestionbox {
+ .searchsuggestionbox {
     position: absolute;
     top: 100%;
     left: 0;
@@ -125,23 +137,23 @@ style.textContent = `
     display: none;
     z-index: 1000;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    font-family: Arial, sans-serif !important;
-    font-size: 12px !important;
-    color: black !important;
-    text-transform: capitalize !important;
   }
+
   .searchsuggestionbox .suggestion-item {
     padding: 8px;
     cursor: pointer;
     color: black !important;
     font-size: 12px !important;
-    font-family: Arial, sans-serif !important;
+    font-family: 'Inter', 'Arial', sans-serif !important;
+    line-height: 1.4;
     background: white !important;
     border: none !important;
     text-transform: capitalize !important;
+    white-space: normal;
   }
+
   .searchsuggestionbox .suggestion-item:hover {
-    background-color: #eee !important;
+    background-color: #eee;
   }
   .searchsuggestionbox .view-all-link {
     padding: 10px;
@@ -188,11 +200,14 @@ input.addEventListener("input", async () => {
     if (data.suggestions && data.suggestions.length > 0) {
       suggestionBox.style.display = "block";
       suggestionBox.innerHTML = data.suggestions
-        .map((s, i) => {
-          const url = data.detailUrls?.[i] || `/search-results?q=${encodeURIComponent(s)}`;
-          return `<div class="suggestion-item" data-url="${url}">${s}</div>`;
-        })
-        .join("");
+  .map((s, i) => {
+    const cleanText = sanitizeText(s);
+    const displayText = toTitleCase(cleanText); // consistent styling
+    const url = data.detailUrls?.[i] || `/search-results?q=${encodeURIComponent(cleanText)}`;
+    return `<div class="suggestion-item" data-url="${url}">${displayText}</div>`;
+  })
+  .join("");
+
 
       suggestionBox.querySelectorAll('.suggestion-item').forEach(item => {
         item.addEventListener('click', () => {
