@@ -115,7 +115,7 @@ const style = document.createElement("style");
 style.textContent = `
   .searchsuggestionbox {
     position: absolute;
-    top: 100%;           /* Places it directly below the input */
+    top: 100%;
     left: 0;
     background: white;
     border: 1px solid #ccc;
@@ -125,18 +125,36 @@ style.textContent = `
     display: none;
     z-index: 1000;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    font-family: Arial, sans-serif !important;
+    font-size: 18px !important;
+    color: black !important;
   }
-  .suggestion-item {
+  .searchsuggestionbox .suggestion-item {
     padding: 8px;
     cursor: pointer;
-    color: black;
-    font-size: 18px;
+    color: black !important;
+    font-size: 18px !important;
+    font-family: Arial, sans-serif !important;
+    background: white !important;
+    border: none !important;
   }
-  .suggestion-item:hover {
-    background-color: #eee;
+  .searchsuggestionbox .suggestion-item:hover {
+    background-color: #eee !important;
+  }
+  .searchsuggestionbox .view-all-link {
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    color: #0073e6 !important;
+    cursor: pointer;
+    border-top: 1px solid #eee;
+    background: #fafafa;
+    font-family: Arial, sans-serif !important;
+    font-size: 16px !important;
   }
 `;
 document.head.appendChild(style);
+
 
     
     let suggestionBox = document.querySelector(".searchsuggestionbox");
