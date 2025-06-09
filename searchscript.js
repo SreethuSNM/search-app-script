@@ -364,7 +364,7 @@ console.log('All unique data-* attributes:', Array.from(filterAttrs));
     }
 
    .searchresults {
-  max-height: 100vh !important;
+  max-height: 500px !important;
   overflow-y: auto !important;
   overflow-x: hidden;
   padding: 10px 10px 30px 10px;
@@ -372,7 +372,7 @@ console.log('All unique data-* attributes:', Array.from(filterAttrs));
   
   display: grid !important;
   grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  gap: 5px;
   box-sizing: border-box;
 }
 
