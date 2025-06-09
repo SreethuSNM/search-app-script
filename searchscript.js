@@ -372,7 +372,7 @@ console.log('All unique data-* attributes:', Array.from(filterAttrs));
     
     display: grid !important;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
+    gap: 5px;
 
     max-height: 80vh;
     overflow-y: auto;
