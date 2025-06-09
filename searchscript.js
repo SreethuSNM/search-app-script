@@ -313,7 +313,7 @@ const targetCollection = searchConfigDiv.getAttribute("data-target-collection");
 
 
   const filterAttrs = new Set();
-  / Loop through all elements and collect unique data-* attributes
+  // Loop through all elements and collect unique data-* attributes
 allItems.forEach(el => {
   el.getAttributeNames().forEach(attr => {
     if (attr.startsWith('data-')) {
