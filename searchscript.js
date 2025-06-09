@@ -440,20 +440,7 @@ const targetCollection = searchConfigDiv.getAttribute("data-target-collection");
     originalList.style.display = "none";
 
     allItems.forEach(item => {
-      
-      const itemCollection = item.getAttribute("data-filter-collection");
-  console.log("filterCollection:", itemCollection);
- const cleanTarget = targetCollection.replace(/^"(.*)"$/, '$1').trim();
-const cleanItem = itemCollection?.trim();
-
-console.log("Comparing:", `"${cleanItem}"`, "vs", `"${cleanTarget}"`);
-      
-      if (cleanTarget && cleanItem !== cleanTarget) {
-      console.log("❌ Skipping item due to collection mismatch");
-      return; // Skip this item in the forEach
-    }
-
-    console.log("✅ Collection matched");
+        
       const matches = [...filterAttrs].some(attr => {
         const attrVal = (item.getAttribute(attr) || "").toLowerCase();
         return attrVal.includes(query);
