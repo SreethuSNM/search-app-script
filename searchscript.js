@@ -442,7 +442,7 @@ const targetCollection = searchConfigDiv.getAttribute("data-target-collection");
     allItems.forEach(item => {
       
       const itemCollection = item.getAttribute("data-filter-collection");
-  
+  console.log("filterCollection:", itemCollection);
  const cleanTarget = targetCollection.replace(/^"(.*)"$/, '$1').trim();
 const cleanItem = itemCollection?.trim();
 
