@@ -362,6 +362,12 @@ console.log('All unique data-* attributes:', Array.from(filterAttrs));
       padding: 8px 15px;
       cursor: pointer;
     }
+
+    .searchresults {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 8px;
+  }
   `;
   document.head.appendChild(style);
 
