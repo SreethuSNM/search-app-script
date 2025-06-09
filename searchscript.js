@@ -368,6 +368,7 @@ console.log('All unique data-* attributes:', Array.from(filterAttrs));
     max-width: 1200px;
     margin: 20px auto;
     padding: 10px;
+     padding-bottom: 100px;
     
     display: grid !important;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
