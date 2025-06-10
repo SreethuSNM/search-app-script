@@ -283,8 +283,9 @@ suggestionBox.style.display = "block";
   });
 
   // Inject CSS for highlight
-  const style = document.createElement("style");
-  style.textContent = `
+   // Inject CSS for highlight
+  const highlightStyle = document.createElement("style");
+  highlightStyle.textContent = `
     mark {
       background-color: #ffeb3b;
       color: inherit;
@@ -293,7 +294,8 @@ suggestionBox.style.display = "block";
       border-radius: 2px;
     }
   `;
-  document.head.appendChild(style);
+  document.head.appendChild(highlightStyle);
+
 
   // Helper to remove existing highlights
   function removeAllHighlights(item) {
