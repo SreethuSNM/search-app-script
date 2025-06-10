@@ -60,7 +60,10 @@ async function getVisitorSessionToken() {
     const input = document.getElementById("field");
 
     
-     if(input) input.style.borderRadius = "8px";
+if (input) {
+  input.placeholder = "Search here";
+  input.style.borderRadius = "8px"; // (your existing style)
+}
     
     const searchConfigDiv = document.querySelector("#search-config");
     
