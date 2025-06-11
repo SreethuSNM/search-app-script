@@ -58,7 +58,8 @@ async function getVisitorSessionToken() {
     if (window.location.pathname === '/search-app-results') return;
     
    
-    const input = document.getElementById("field");
+    const input = document.querySelector(".searchformwrapper input[type='text']");
+   
 
     
 if (input) {
