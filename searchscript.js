@@ -76,7 +76,7 @@ if (input) {
 
 
     // === Result Type Behavior ===
-    const resultType = searchConfigDiv.getAttribute('data-result-type') || "Click on search";
+    
     const searchBarType = searchConfigDiv.getAttribute('data-search-bar');
     const selectedCollections = JSON.parse(searchConfigDiv.getAttribute('data-selected-collections') || '[]');
     const selectedFieldsSearch = JSON.parse(searchConfigDiv.getAttribute('data-selected-fields-search') || '[]');
