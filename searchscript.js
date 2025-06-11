@@ -1,3 +1,4 @@
+
  // Generate or get visitor ID
 async function getOrCreateVisitorId() {
     let visitorId = localStorage.getItem('visitorId');
@@ -255,8 +256,7 @@ suggestionBox.style.display = "block";
 });
 
 
- const filterinput = document.querySelector(".searchfilterformcontainer input");
-
+ const filterinput = document.querySelector(".searchfilterformcontainer input"); 
 const allItems = [...document.querySelectorAll(".w-dyn-item")];
 
 if (!filterinput || allItems.length === 0) {
@@ -264,12 +264,11 @@ if (!filterinput || allItems.length === 0) {
   return;
 }
 
-if (filterinput) {
-  filterinput.placeholder = "Search here";
-  filterinput.style.borderRadius = "8px";
-  filterinput.style.margin = "0 16px"; // add left and right margin
-  filterinput.style.width = "50%";
-}
+// Style the search input
+filterinput.placeholder = "Search here";
+filterinput.style.borderRadius = "8px";
+filterinput.style.margin = "0 16px";
+filterinput.style.width = "50%";
 
 // Collect all unique data-* attributes from all items
 const filterAttrs = new Set();
@@ -294,7 +293,7 @@ highlightStyle.textContent = `
 `;
 document.head.appendChild(highlightStyle);
 
-// Helper to remove existing highlights
+// Remove existing highlights
 function removeAllHighlights(item) {
   item.querySelectorAll("mark").forEach(mark => {
     const parent = mark.parentNode;
@@ -319,72 +318,59 @@ function highlightText(element, query) {
   });
 }
 
-// === PAGINATION SETUP ===
+// Pagination logic
 const itemsPerPage = 6;
 let currentPage = 1;
+let filteredItems = [...allItems];
 
+// Create pagination container
 const paginationContainer = document.createElement("div");
-paginationContainer.className = "pagination-container";
 paginationContainer.style.display = "flex";
-paginationContainer.style.flexWrap = "wrap";
 paginationContainer.style.gap = "8px";
-paginationContainer.style.margin = "20px 0";
+paginationContainer.style.marginTop = "20px";
+paginationContainer.style.flexWrap = "wrap";
 paginationContainer.style.justifyContent = "center";
+document.querySelector(".w-dyn-items")?.after(paginationContainer);
 
-// Append pagination after collection list
-const listParent = allItems[0]?.parentElement;
-if (listParent) {
-  listParent.parentElement.appendChild(paginationContainer);
-}
-
-function showPage(page, items) {
-  currentPage = page;
-  const start = (page - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
-
-  let visibleIndex = -1;
-  items.forEach(item => {
-    if (item.style.display === "none") {
-      return;
-    }
-
-    visibleIndex++;
-    if (visibleIndex >= start && visibleIndex < end) {
-      item.style.display = "";
-    } else {
-      item.style.display = "none";
-    }
-  });
-
-  renderPagination(items.filter(i => i.style.display !== "none" || i.style.display === "").length);
-}
-
-function renderPagination(totalVisible) {
-  const totalPages = Math.ceil(totalVisible / itemsPerPage);
+// Render pagination buttons
+function renderPagination(totalItems) {
   paginationContainer.innerHTML = "";
+  const pageCount = Math.ceil(totalItems / itemsPerPage);
 
-  if (totalPages <= 1) return;
+  for (let i = 1; i <= pageCount; i++) {
+    const button = document.createElement("button");
+    button.textContent = i;
+    button.style.padding = "6px 12px";
+    button.style.border = "1px solid black";
+    button.style.color = "orange";
+    button.style.borderRadius = "4px";
+    button.style.cursor = "pointer";
+    button.style.background = i === currentPage ? "#ffe0b3" : "transparent";
 
-  for (let i = 1; i <= totalPages; i++) {
-    const btn = document.createElement("button");
-    btn.textContent = i;
-    btn.style.padding = "6px 12px";
-    btn.style.border = "1px solid #ccc";
-    btn.style.background = (i === currentPage) ? "#333" : "#fff";
-    btn.style.color = (i === currentPage) ? "#fff" : "#000";
-    btn.style.borderRadius = "4px";
-    btn.style.cursor = "pointer";
+    button.addEventListener("click", () => {
+      currentPage = i;
+      showPage();
+    });
 
-    btn.addEventListener("click", () => showPage(i, allItems));
-    paginationContainer.appendChild(btn);
+    paginationContainer.appendChild(button);
   }
 }
 
-// === SEARCH HANDLER ===
+// Show current page items
+function showPage() {
+  allItems.forEach(item => item.style.display = "none");
+  const start = (currentPage - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  const itemsToShow = filteredItems.slice(start, end);
+  itemsToShow.forEach(item => item.style.display = "");
+  renderPagination(filteredItems.length);
+}
+
+// Main search input listener with pagination
 filterinput.addEventListener("input", () => {
   const query = filterinput.value.toLowerCase().trim();
 
-  allItems.forEach(item => {
+  filteredItems = allItems.filter(item => {
     removeAllHighlights(item);
 
     const matches = [...filterAttrs].some(attr => {
@@ -393,27 +379,27 @@ filterinput.addEventListener("input", () => {
     });
 
     if (query && matches) {
-      item.style.display = "";
       [...item.querySelectorAll("*")].forEach(el => {
         if ((el.textContent || "").toLowerCase().includes(query)) {
           highlightText(el, query);
         }
       });
+      return true;
     } else if (!query) {
-      item.style.display = ""; // Show all on empty query
-    } else {
-      item.style.display = "none";
+      return true;
     }
+    return false;
   });
 
-  // Reapply pagination to filtered results
-  setTimeout(() => showPage(1, allItems), 10);
+  currentPage = 1;
+  showPage();
 });
 
-// Initial render
-showPage(1, allItems);
+// Initial display
+showPage();
 
 
 
   
   });
+
