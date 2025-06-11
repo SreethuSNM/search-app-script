@@ -60,12 +60,13 @@ async function getVisitorSessionToken() {
    
     const input = document.querySelector(".searchformwrapper input[type='text']");
    
-
+ // === Only run suggestion + redirect logic if .searchformwrapper input exists ===
+  if (input) {
     
-if (input) {
+
   input.placeholder = "Search here";
   input.style.borderRadius = "8px"; // (your existing style)
-}
+
     
     const searchConfigDiv = document.querySelector("#search-config");
     
@@ -256,14 +257,22 @@ suggestionBox.style.display = "block";
   }
 });
 
+  }
+
+
 
  const filterinput = document.querySelector(".searchfilterformcontainer input"); 
 const allItems = [...document.querySelectorAll(".w-dyn-item")];
 
-if (!filterinput || allItems.length === 0) {
+   if (!filterinput || allItems.length === 0) {
   console.warn("Search input or items not found.");
   return;
 }
+
+   // === Only run filtering + pagination if .searchfilterformcontainer input exists ===
+  if (filterInput && allItems.length > 0) {
+
+
 
 // Style the search input
 filterinput.placeholder = "Search here";
@@ -399,8 +408,9 @@ filterinput.addEventListener("input", () => {
 // Initial display
 showPage();
 
-
+  }
 
   
   });
+
 
