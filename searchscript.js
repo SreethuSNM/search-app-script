@@ -270,7 +270,7 @@ const allItems = [...document.querySelectorAll(".w-dyn-item")];
 }
 
    // === Only run filtering + pagination if .searchfilterformcontainer input exists ===
-  if (filterInput && allItems.length > 0) {
+  if (filterinput && allItems.length > 0) {
 
 
 
