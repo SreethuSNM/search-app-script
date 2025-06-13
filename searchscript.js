@@ -329,7 +329,7 @@ function highlightText(element, query) {
 }
 
 // Pagination logic
-const itemsPerPage = 9;
+const itemsPerPage = 10;
 let currentPage = 1;
 let filteredItems = [...allItems];
 
