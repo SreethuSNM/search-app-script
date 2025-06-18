@@ -236,8 +236,13 @@ viewAllLink.style.cssText = `
   border-top: 1px solid #eee;
   background: #fafafa;
 `;
-viewAllLink.addEventListener("click", () => {
-  window.location.href = `/search-app-results?q=${encodeURIComponent(query)}`;
+// viewAllLink.addEventListener("click", () => {
+//   window.location.href = `/search-app-results?q=${encodeURIComponent(query)}`;
+// });
+
+     viewAllLink.addEventListener("click", () => {
+  const latestQuery = input.value.trim();
+  window.location.href = `/search-app-results?q=${encodeURIComponent(latestQuery)}`;
 });
 
 // Append View All link inside the suggestion box
