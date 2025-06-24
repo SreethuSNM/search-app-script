@@ -186,12 +186,22 @@ if (!suggestionBox) {
   input.parentNode.appendChild(suggestionBox);
 }
 
-input.addEventListener("input", async () => {
+// input.addEventListener("input", async () => {
+//   const query = input.value.trim();
+//   if (!query) {
+//     suggestionBox.style.display = "none";
+//     suggestionBox.innerHTML = "";
+//     return;
+//   }
+
+   input.addEventListener("input", async () => {
+  // Reset suggestion box on each new input
+  suggestionBox.style.display = "none";
+  suggestionBox.innerHTML = "";
+
   const query = input.value.trim();
   if (!query) {
-    suggestionBox.style.display = "none";
-    suggestionBox.innerHTML = "";
-    return;
+    return; // Keep it hidden if query is empty
   }
 
   try {
