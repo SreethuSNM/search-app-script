@@ -186,23 +186,15 @@ if (!suggestionBox) {
   input.parentNode.appendChild(suggestionBox);
 }
 
-// input.addEventListener("input", async () => {
-//   const query = input.value.trim();
-//   if (!query) {
-//     suggestionBox.style.display = "none";
-//     suggestionBox.innerHTML = "";
-//     return;
-//   }
-
-   input.addEventListener("input", async () => {
-  // Reset suggestion box on each new input
-  suggestionBox.style.display = "none";
-  suggestionBox.innerHTML = "";
-
+input.addEventListener("input", async () => {
   const query = input.value.trim();
   if (!query) {
-    return; // Keep it hidden if query is empty
+    suggestionBox.style.display = "none";
+    suggestionBox.innerHTML = "";
+    return;
   }
+
+  
 
   try {
     const siteName = window.location.hostname.replace(/^www\./, '').split('.')[0];
